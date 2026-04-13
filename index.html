@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>AD360 · Fleet Intelligence</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mapbox-gl/2.15.0/mapbox-gl.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/mapbox-gl/2.15.0/mapbox-gl.css" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{width:100%;height:100%;overflow:hidden;font-family:'DM Sans',sans-serif;background:#06090f;}
+#hdr{position:fixed;top:0;left:0;right:0;background:rgba(6,9,15,0.97);border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:space-between;padding:0 18px;z-index:200;}
+.hdr-brand{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;color:#fff;display:flex;align-items:center;gap:8px;}
+.pip{width:6px;height:6px;border-radius:50%;background:#e8ff47;box-shadow:0 0 8px #e8ff47;animation:pip 1.8s ease-in-out infinite;}
+@keyframes pip{0%,100%{opacity:1}50%{opacity:0.3}}
+.hdr-stats{display:flex;gap:16px;}
+.hstat{text-align:right;}
+.hstat-val{font-family:'Bebas Neue',sans-serif;font-size:17px;letter-spacing:1px;display:block;line-height:1;}
+.hstat-lbl{font-family:'DM Mono',monospace;font-size:6px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.2);}
+#map-wrap{position:fixed;left:0;right:0;z-index:10;background:#06090f;}
+#mapbox{width:100%;height:100%;}
+#ai-overlay{position:absolute;inset:0;pointer-events:none;z-index:5;overflow:hidden;}
+#feed-section{position:fixed;left:0;right:0;bottom:0;background:#06090f;border-top:1px solid rgba(255,255,255,0.08);display:flex;flex-direction:column;z-index:20;}
+.feed-hdr{display:flex;align-items:center;justify-content:space-between;padding:9px 18px 7px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;}
+.feed-title{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.25);}
+.feed-dpm{font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,0.15);}
+#feed-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 14px;display:flex;flex-direction:column;gap:8px;}
+#feed-scroll::-webkit-scrollbar{display:none;}
+.ev{background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.06);border-left:3px solid;padding:12px 12px 10px;border-radius:3px;animation:cIn .35s ease;flex-shrink:0;}
+@keyframes cIn{from{opacity:0;transform:translateY(-8px);}to{opacity:1;transform:translateY(0);}}
+.ev.old{opacity:0.35;transition:opacity .8s;}
+.ev-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
+.ev-tag{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:5px;}
+.ev-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
+.ev-time{font-family:'DM Mono',monospace;font-size:7px;color:rgba(255,255,255,0.2);}
+.ev-loc{font-family:'DM Mono',monospace;font-size:7px;color:rgba(255,255,255,0.2);margin-bottom:5px;}
+.ev-h{font-size:13px;font-weight:500;color:rgba(255,255,255,0.92);line-height:1.3;margin-bottom:3px;}
+.ev-b{font-size:11px;color:rgba(255,255,255,0.38);line-height:1.5;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid rgba(255,255,255,0.06);}
+.ev-swl{font-family:'DM Mono',monospace;font-size:7px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.18);margin-bottom:4px;}
+.ev-sw{font-size:11px;font-weight:500;line-height:1.4;padding:8px 10px;border-left:2px solid;background:rgba(255,255,255,0.02);margin-bottom:7px;}
+.ev-kpi{font-family:'DM Mono',monospace;font-size:8px;color:rgba(255,255,255,0.22);padding-top:7px;border-top:1px solid rgba(255,255,255,0.05);}
+#metrics{display:flex;border-top:1px solid rgba(255,255,255,0.06);flex-shrink:0;background:#06090f;}
+.met{flex:1;padding:8px 4px;border-right:1px solid rgba(255,255,255,0.05);text-align:center;}
+.met:last-child{border-right:none;}
+.met-val{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:1px;display:block;line-height:1;}
+.met-lbl{font-family:'DM Mono',monospace;font-size:6px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.2);margin-top:2px;}
+#loading{position:fixed;inset:0;z-index:9999;background:#06090f;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:40px 32px;transition:opacity .6s ease;}
+#loading.gone{opacity:0;pointer-events:none;visibility:hidden;}
+.ld-title{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:3px;color:#fff;text-align:center;line-height:1.1;}
+.ld-title span{color:#e8ff47;}
+.ld-sub{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.25);text-align:center;}
+#ld-st{font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,0.3);text-align:center;min-height:16px;}
+.ld-bar{width:200px;height:2px;background:rgba(255,255,255,0.08);}
+#ld-fill{height:100%;background:#e8ff47;width:0%;transition:width .4s ease;}
+#ld-btn{margin-top:8px;padding:14px 44px;background:rgba(232,255,71,0.08);border:1px solid rgba(232,255,71,0.4);color:#e8ff47;font-family:'DM Mono',monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;border-radius:2px;cursor:pointer;display:none;-webkit-appearance:none;}
+#ld-btn:active{background:rgba(232,255,71,0.2);}
+.mapboxgl-ctrl-bottom-right,.mapboxgl-ctrl-bottom-left,.mapboxgl-ctrl-top-right{display:none!important;}
+</style>
+</head>
+<body>
+<div id="hdr">
+  <div class="hdr-brand"><div class="pip"></div>AD360</div>
+  <div class="hdr-stats">
+    <div class="hstat"><span class="hstat-val" style="color:#e8ff47" id="htd">0</span><span class="hstat-lbl">Decisions</span></div>
+    <div class="hstat"><span class="hstat-val" style="color:#1D9E75" id="htv">0</span><span class="hstat-lbl">Value €</span></div>
+    <div class="hstat"><span class="hstat-val" style="color:#BA7517" id="hta">0</span><span class="hstat-lbl">Audits</span></div>
+  </div>
+</div>
+<div id="map-wrap"><div id="mapbox"></div><div id="ai-overlay"></div></div>
+<div id="feed-section">
+  <div class="feed-hdr"><div class="feed-title">Live decision feed</div><div class="feed-dpm" id="dpm-lbl">0 / min</div></div>
+  <div id="feed-scroll"><div id="feed-ph" style="font-family:'DM Mono',monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.12);text-align:center;padding:24px 0;">Loading...</div></div>
+  <div id="metrics">
+    <div class="met"><span class="met-val" style="color:#e8ff47" id="sw1">€0</span><span class="met-lbl">Revenue</span></div>
+    <div class="met"><span class="met-val" style="color:#BA7517" id="sw2">0</span><span class="met-lbl">Audits</span></div>
+    <div class="met"><span class="met-val" style="color:#7F77DD" id="sw3">+0%</span><span class="met-lbl">Intelligence</span></div>
+    <div class="met"><span class="met-val" style="color:rgba(255,255,255,0.15)">0</span><span class="met-lbl" style="color:rgba(255,80,80,0.3)">No AD360</span></div>
+  </div>
+</div>
+<div id="loading">
+  <div class="ld-title">AD360<br><span>Fleet Intelligence</span></div>
+  <div class="ld-sub">Hamburg · Live simulation</div>
+  <div id="ld-st">Initialising...</div>
+  <div class="ld-bar"><div id="ld-fill"></div></div>
+  <button id="ld-btn" onclick="startSim()">Start simulation</button>
+</div>
+<script>
+var TOKEN='pk.eyJ1Ijoic2ltb25yZXV0eiIsImEiOiJjbW54NmUxaGMwMW5yMnFzOG12ZHBzOXJiIn0.gVmqoI1F82W0V839ezA2ZA';
+mapboxgl.accessToken=TOKEN;
+
+// iOS Safari worker fix — disable worker to avoid structured clone error
+mapboxgl.workerCount=1;
+// Force worker URL to CDN — fixes iOS Safari structured clone error on HTTPS
+try {
+  mapboxgl.workerUrl = 'https://cdnjs.cloudflare.com/ajax/libs/mapbox-gl/2.15.0/mapbox-gl-csp-worker.js';
+} catch(e) {}
+
+var map=null,vehicles=[],totalD=0,totalR=0,totalA=0,totalI=0,startT=null,feedCards=[],hardTimer=null;
+
+function setP(p,m){document.getElementById('ld-fill').style.width=p+'%';document.getElementById('ld-st').textContent=m;}
+function showBtn(){document.getElementById('ld-btn').style.display='block';}
+
+// Layout — pure JS pixel sizing
+function applyLayout(){
+  var hdrH=document.getElementById('hdr').offsetHeight;
+  var winH=window.innerHeight;
+  var mapH=Math.round(winH*0.50);
+  var feedTop=hdrH+mapH;
+  var mw=document.getElementById('map-wrap');
+  mw.style.top=hdrH+'px';
+  mw.style.height=mapH+'px';
+  var fs=document.getElementById('feed-section');
+  fs.style.top=feedTop+'px';
+  fs.style.height=(winH-feedTop)+'px';
+  if(map)map.resize();
+}
+window.addEventListener('resize',applyLayout);
+window.addEventListener('orientationchange',function(){setTimeout(applyLayout,500);});
+
+// Routes
+var EPS=[[10.0064,53.5530,9.9750,53.5501],[9.9356,53.5521,10.0042,53.5414],[10.0042,53.5414,9.9480,53.5508],[10.0393,53.5820,9.9938,53.5497],[9.9750,53.5920,9.9870,53.5489],[9.9490,53.5710,9.9938,53.5497],[10.0700,53.5720,9.9830,53.5610],[10.0100,53.5150,10.0042,53.5414]];
+var LOCS=['Rathausmarkt','Hauptbahnhof','HafenCity','Speicherstadt','Jungfernstieg','Altona','Reeperbahn','Neustadt','Uhlenhorst','Eppendorf','Eimsbüttel','Sternschanze','Barmbek','Alsterarkaden','Binnenalster','Mönckebergstr.'];
+var AIL=['ANALYSING SENSORS','COMPUTING ROUTE','RISK ASSESSMENT','DECISION MEMORY','REGULATORY CHECK','INTELLIGENCE QUERY','BOE UPDATING','CAPABILITY MATCH'];
+var DT=[
+  {t:'r',c:'#e8ff47',l:'REVENUE',cases:[
+    {h:'Fare transaction settled',b:'Demand-based pricing applied. Booking confirmed.',s:'€0.001 transaction fee generated automatically',k:'Revenue: +€0.001 · Demand: 94'},
+    {h:'Route optimised · 18% saving',b:'Real-time routing avoided congestion.',s:'€2.40 efficiency gain shared with fleet operator',k:'Efficiency: +18% · Saved: 1.2 km'},
+    {h:'Smart charging captured',b:'Off-peak tariff detected. Vehicle routed optimally.',s:'€0.18 energy saving logged automatically',k:'Energy: −€0.18 · Grid peak avoided'},
+    {h:'In-trip service converted',b:'Passenger accepted recommendation en route.',s:'€1.20 retail commission earned — zero effort',k:'Commission: +€1.20 · Profile enriched'}
+  ]},
+  {t:'g',c:'#BA7517',l:'GOVERNANCE',cases:[
+    {h:'Pedestrian crossing detected',b:'Vehicle yielded. Full decision context captured.',s:'EU AI Act audit entry auto-generated — explainable to any regulator',k:'Audit created · Liability: documented'},
+    {h:'Emergency vehicle cleared',b:'Corridor cleared in 0.4s via V2X.',s:'Full decision chain documented legally',k:'Response: unaffected · Traceable'},
+    {h:'School zone speed adapted',b:'Speed reduced to 15 km/h automatically.',s:'Regulatory compliance generated as byproduct',k:'Speed: 30→15 km/h · Compliant'},
+    {h:'Intersection resolved',b:'Multi-vehicle priority correctly determined.',s:'Decision explainable to cities or courts on demand',k:'Safety: maintained · 100% explainable'}
+  ]},
+  {t:'i',c:'#7F77DD',l:'INTELLIGENCE',cases:[
+    {h:'Demand pattern discovered',b:'New cluster identified. Fleet models updated.',s:'Every AD360 vehicle benefits from this immediately',k:'Accuracy: +0.003% · Zone logged'},
+    {h:'Risk model refined',b:'Intersection data enriches risk scoring.',s:'Allianz Risk API 0.4% more accurate for this zone',k:'Risk delta: +0.4% · Zone expanded'},
+    {h:'Maintenance predicted earlier',b:'Battery degradation curve updated from live data.',s:'Next service predicted 3 weeks earlier',k:'Lead time: +3w · Confidence: 94%'},
+    {h:'City flow model updated',b:'847 new data points integrated.',s:'Hamburg city planners see real-time conditions',k:'Freshness: real-time · Points: +847'}
+  ]}
+];
+
+function straightLine(ep){
+  var pts=[];
+  for(var i=0;i<=28;i++){var t=i/28;pts.push([ep[0]+(ep[2]-ep[0])*t,ep[1]+(ep[3]-ep[1])*t]);}
+  return pts;
+}
+
+function fetchRoute(ep){
+  var url='https://api.mapbox.com/directions/v5/mapbox/driving/'+ep[0]+','+ep[1]+';'+ep[2]+','+ep[3]+'?geometries=geojson&overview=full&access_token='+TOKEN;
+  var timeout=new Promise(function(res){setTimeout(function(){res(null);},5000);});
+  var req=fetch(url).then(function(r){return r.json();}).then(function(d){return(d.routes&&d.routes[0])?d.routes[0].geometry.coordinates:null;}).catch(function(){return null;});
+  return Promise.race([req,timeout]).then(function(result){return result||straightLine(ep);}).catch(function(){return straightLine(ep);});
+}
+
+function makeIcon(){
+  var sz=56,cv=document.createElement('canvas');cv.width=sz;cv.height=sz;
+  var ctx=cv.getContext('2d');
+  var g=ctx.createRadialGradient(sz/2,sz/2,4,sz/2,sz/2,sz/2);
+  g.addColorStop(0,'rgba(127,119,221,0.25)');g.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=g;ctx.fillRect(0,0,sz,sz);
+  var bw=20,bh=32,bx=(sz-bw)/2,by=(sz-bh)/2;
+  ctx.beginPath();
+  ctx.moveTo(bx+4,by);ctx.lineTo(bx+bw-4,by);ctx.quadraticCurveTo(bx+bw,by,bx+bw,by+4);
+  ctx.lineTo(bx+bw,by+bh-4);ctx.quadraticCurveTo(bx+bw,by+bh,bx+bw-4,by+bh);
+  ctx.lineTo(bx+4,by+bh);ctx.quadraticCurveTo(bx,by+bh,bx,by+bh-4);
+  ctx.lineTo(bx,by+4);ctx.quadraticCurveTo(bx,by,bx+4,by);ctx.closePath();
+  ctx.fillStyle='#1e1b5e';ctx.strokeStyle='rgba(127,119,221,0.95)';ctx.lineWidth=2;ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.rect(bx+3,by+4,bw-6,9);ctx.fillStyle='rgba(100,200,255,0.3)';ctx.fill();
+  ctx.fillStyle='rgba(127,119,221,0.5)';ctx.fillRect(bx+3,by+15,bw-6,3);
+  [[bx+2,by+bh-9],[bx+bw-6,by+bh-9]].forEach(function(arr){
+    ctx.beginPath();ctx.arc(arr[0]+2,arr[1]+2,3.5,0,Math.PI*2);
+    ctx.fillStyle='#08080f';ctx.strokeStyle='rgba(127,119,221,0.65)';ctx.lineWidth=1.2;ctx.fill();ctx.stroke();
+  });
+  ctx.beginPath();ctx.arc(sz/2,by-1,3.5,0,Math.PI*2);
+  ctx.fillStyle='#e8ff47';ctx.shadowColor='#e8ff47';ctx.shadowBlur=8;ctx.fill();ctx.shadowBlur=0;
+  return{width:sz,height:sz,data:new Uint8Array(ctx.getImageData(0,0,sz,sz).data.buffer)};
+}
+
+function Vehicle(coords,id){
+  this.coords=coords;this.id=id;this.pi=0;this.t=0;
+  this.sp=0.007+Math.random()*0.004;
+  this.lng=coords[0][0];this.lat=coords[0][1];this.bearing=0;this.trail=[];
+  this.dt=Math.floor(Math.random()*300)+200;this.dc=280+Math.floor(Math.random()*260);
+}
+Vehicle.prototype.gj=function(){return{type:'Feature',geometry:{type:'Point',coordinates:[this.lng,this.lat]},properties:{b:this.bearing}};};
+Vehicle.prototype.init=function(){
+  map.addSource('tr'+this.id,{type:'geojson',data:{type:'Feature',geometry:{type:'LineString',coordinates:[]}}});
+  map.addLayer({id:'trl'+this.id,type:'line',source:'tr'+this.id,paint:{'line-color':'rgba(127,119,221,0.3)','line-width':2,'line-dasharray':[2,2]}});
+  map.addSource('vp'+this.id,{type:'geojson',data:this.gj()});
+  map.addLayer({id:'vpl'+this.id,type:'symbol',source:'vp'+this.id,layout:{
+    'icon-image':'av',
+    'icon-size':['interpolate',['exponential',2],['zoom'],11,0.4,13,0.65,15,0.95],
+    'icon-rotate':['get','b'],
+    'icon-rotation-alignment':'map',
+    'icon-pitch-alignment':'map',
+    'icon-allow-overlap':true,
+    'icon-ignore-placement':true
+  }});
+};
+Vehicle.prototype.update=function(){
+  var a=this.coords[this.pi],ni=(this.pi+1)%this.coords.length,b=this.coords[ni];
+  this.t+=this.sp;
+  if(this.t>=1){this.t=0;this.pi=ni;if(this.pi===0)this.trail=[];}
+  this.lng=a[0]+(b[0]-a[0])*this.t;this.lat=a[1]+(b[1]-a[1])*this.t;
+  this.bearing=(Math.atan2(b[0]-a[0],b[1]-a[1])*180/Math.PI+360)%360;
+  try{var ps=map.getSource('vp'+this.id);if(ps)ps.setData(this.gj());}catch(e){}
+  this.trail.push([this.lng,this.lat]);if(this.trail.length>60)this.trail.shift();
+  try{var ts=map.getSource('tr'+this.id);if(ts)ts.setData({type:'Feature',geometry:{type:'LineString',coordinates:this.trail}});}catch(e){}
+  this.dt++;
+  if(this.dt>=this.dc){this.dt=0;this.dc=260+Math.floor(Math.random()*280);this.decide();}
+};
+Vehicle.prototype.decide=function(){
+  totalD++;var dtype=DT[totalD%3];var c=dtype.cases[Math.floor(Math.random()*dtype.cases.length)];
+  var loc=LOCS[Math.floor(Math.random()*LOCS.length)];var ts=new Date().toTimeString().slice(0,8);
+  document.getElementById('htd').textContent=totalD;
+  if(startT){var m=Math.max((Date.now()-startT)/60000,0.05);document.getElementById('dpm-lbl').textContent=Math.max(1,Math.floor(totalD/m))+' / min';}
+  if(dtype.t==='r'){var v=parseFloat((Math.random()*2+0.001).toFixed(2));totalR+=v;document.getElementById('sw1').textContent='€'+totalR.toFixed(2);document.getElementById('htv').textContent=totalR.toFixed(0);}
+  else if(dtype.t==='g'){totalA++;document.getElementById('sw2').textContent=totalA;document.getElementById('hta').textContent=totalA;}
+  else{totalI=Math.min(totalI+0.3,20);document.getElementById('sw3').textContent='+'+totalI.toFixed(1)+'%';}
+  this.showAI(dtype);
+  var vid=this.id;setTimeout(function(){addCard(vid,loc,ts,dtype,c);},900);
+};
+Vehicle.prototype.showAI=function(dtype){
+  try{
+    var pt=map.project([this.lng,this.lat]);
+    var ov=document.getElementById('ai-overlay');
+    var color=dtype.c;
+    var x=pt.x,y=pt.y;
+    for(var i=0;i<3;i++){
+      (function(idx){
+        var r=document.createElement('div');
+        var d=80+idx*70;
+        r.style.cssText='position:absolute;border-radius:50%;border:2px solid '+color+';width:'+d+'px;height:'+d+'px;left:'+x+'px;top:'+y+'px;transform:translate(-50%,-50%) scale(0.05);opacity:0;transition:transform '+(1400+idx*150)+'ms cubic-bezier(0.1,0,0.4,1) '+(idx*280)+'ms,opacity '+(1400+idx*150)+'ms ease '+(idx*280)+'ms;pointer-events:none;';
+        ov.appendChild(r);
+        requestAnimationFrame(function(){requestAnimationFrame(function(){r.style.transform='translate(-50%,-50%) scale(1)';r.style.opacity='0.7';});});
+        setTimeout(function(){r.style.opacity='0';setTimeout(function(){if(r.parentNode)r.remove();},500);},1600+idx*200);
+      })(i);
+    }
+    var badge=document.createElement('div');
+    badge.style.cssText='position:absolute;font-family:DM Mono,monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;padding:4px 10px;border:1px solid '+color+';background:rgba(6,9,15,0.95);color:'+color+';white-space:nowrap;pointer-events:none;left:'+x+'px;top:'+y+'px;transform:translate(-50%,-150%);opacity:0;transition:opacity .3s;';
+    badge.textContent=AIL[Math.floor(Math.random()*AIL.length)];
+    ov.appendChild(badge);
+    requestAnimationFrame(function(){requestAnimationFrame(function(){badge.style.opacity='1';});});
+    setTimeout(function(){badge.style.opacity='0';setTimeout(function(){if(badge.parentNode)badge.remove();},300);},2000);
+    [0,72,144,216,288].forEach(function(ang,i){
+      var len=40+Math.random()*30,rad=ang*Math.PI/180;
+      var ax=Math.atan2(Math.sin(rad),Math.cos(rad))*180/Math.PI;
+      var ray=document.createElement('div');
+      ray.style.cssText='position:absolute;height:1px;transform-origin:0 50%;background:'+color+';left:'+x+'px;top:'+y+'px;width:0px;transform:rotate('+ax+'deg);opacity:0;transition:width .7s ease '+(i*70)+'ms,opacity .3s ease '+(i*70)+'ms;pointer-events:none;';
+      ov.appendChild(ray);
+      requestAnimationFrame(function(){requestAnimationFrame(function(){ray.style.width=len+'px';ray.style.opacity='0.5';});});
+      setTimeout(function(){ray.style.opacity='0';setTimeout(function(){if(ray.parentNode)ray.remove();},300);},1200+i*70);
+    });
+    var rid='rng'+Date.now()+this.id;
+    var lng=this.lng,lat=this.lat;
+    map.addSource(rid,{type:'geojson',data:{type:'Feature',geometry:{type:'Point',coordinates:[lng,lat]}}});
+    map.addLayer({id:rid,type:'circle',source:rid,paint:{'circle-radius':0,'circle-color':'transparent','circle-stroke-width':2,'circle-stroke-color':color,'circle-stroke-opacity':0.9,'circle-pitch-alignment':'map','circle-radius-transition':{duration:1400},'circle-stroke-opacity-transition':{duration:1400}}});
+    setTimeout(function(){try{if(map.getLayer(rid)){map.setPaintProperty(rid,'circle-radius',80);map.setPaintProperty(rid,'circle-stroke-opacity',0);}}catch(e){}},30);
+    setTimeout(function(){try{if(map.getLayer(rid))map.removeLayer(rid);if(map.getSource(rid))map.removeSource(rid);}catch(e){}},1800);
+  }catch(e){}
+};
+
+function addCard(vid,loc,time,dtype,c){
+  var ph=document.getElementById('feed-ph');if(ph)ph.remove();
+  var sc=document.getElementById('feed-scroll'),card=document.createElement('div');
+  card.className='ev';card.style.borderLeftColor=dtype.c;
+  card.innerHTML='<div class="ev-top"><div class="ev-tag" style="color:'+dtype.c+'"><div class="ev-dot" style="background:'+dtype.c+'"></div>'+dtype.l+'</div><div class="ev-time">'+time+'</div></div><div class="ev-loc">📍 '+loc+' · #0'+(vid+1)+'</div><div class="ev-h">'+c.h+'</div><div class="ev-b">'+c.b+'</div><div class="ev-swl">So what</div><div class="ev-sw" style="border-color:'+dtype.c+';color:'+dtype.c+'">'+c.s+'</div><div class="ev-kpi">'+c.k+'</div>';
+  sc.insertBefore(card,sc.firstChild);feedCards.unshift(card);
+  feedCards.forEach(function(fc,i){if(i>0)fc.classList.add('old');});
+  if(feedCards.length>8){var old=feedCards.pop();if(old&&old.parentNode)old.remove();}
+}
+
+function loop(){for(var i=0;i<vehicles.length;i++)vehicles[i].update();requestAnimationFrame(loop);}
+
+function startSim(){
+  document.getElementById('loading').classList.add('gone');
+  startT=Date.now();loop();
+  setInterval(function(){if(!startT)return;var m=Math.max((Date.now()-startT)/60000,0.05);document.getElementById('dpm-lbl').textContent=Math.max(1,Math.floor(totalD/m))+' / min';},1000);
+}
+
+function init(){
+  applyLayout();
+  if(!mapboxgl.supported()){setP(100,'WebGL unavailable — update to iOS 15+');showBtn();return;}
+  setP(10,'Loading map...');
+
+  map=new mapboxgl.Map({
+    container:'mapbox',
+    style:'mapbox://styles/mapbox/dark-v11',
+    center:[9.9960,53.5503],
+    zoom:13.0,
+    pitch:45,
+    bearing:-10,
+    interactive:true,
+    attributionControl:false,
+    fadeDuration:0,
+    refreshExpiredTiles:false,
+    trackResize:true
+  });
+
+  map.touchZoomRotate.disableRotation();
+
+  // Hard timeout — always show button after 10s
+  hardTimer=setTimeout(function(){
+    setP(100,'Ready');showBtn();
+    if(vehicles.length===0){
+      for(var i=0;i<EPS.length;i++){
+        try{var v=new Vehicle(straightLine(EPS[i]),i);if(map.loaded())v.init();vehicles.push(v);}catch(e){}
+      }
+    }
+  },10000);
+
+  map.on('load',function(){
+    setP(30,'Map ready. Loading street routes...');
+    try{map.addImage('av',makeIcon());}catch(e){console.warn('icon:',e);}
+    try{
+      map.addLayer({id:'3d-bld',source:'composite','source-layer':'building',filter:['==','extrude','true'],type:'fill-extrusion',minzoom:13,paint:{
+        'fill-extrusion-color':'#0c1220',
+        'fill-extrusion-height':['get','height'],
+        'fill-extrusion-base':['get','min_height'],
+        'fill-extrusion-opacity':0.9
+      }});
+    }catch(e){}
+
+    var loaded=0;
+    var promises=EPS.map(function(ep){
+      return fetchRoute(ep).then(function(c){
+        loaded++;setP(30+loaded*8,'Route '+loaded+'/'+EPS.length);return c;
+      });
+    });
+
+    Promise.all(promises).then(function(allCoords){
+      clearTimeout(hardTimer);
+      setP(95,'Setting up vehicles...');
+      for(var i=0;i<allCoords.length;i++){
+        var coords=allCoords[i];
+        if(coords&&coords.length>1){
+          try{var v=new Vehicle(coords,i);v.init();vehicles.push(v);}catch(e){}
+        }
+      }
+      setP(100,vehicles.length+' vehicles on Hamburg streets');
+      showBtn();
+    }).catch(function(){
+      setP(100,'Ready');showBtn();
+    });
+  });
+
+  map.on('error',function(e){console.warn('Map error:',e.error?e.error.message:e);});
+}
+
+init();
+</script>
+</body>
+</html>
