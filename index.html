@@ -9,96 +9,131 @@
 <link href="mapbox-gl.css" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box;}
-html,body{width:100%;height:100vh;overflow:hidden;font-family:"DM Sans",sans-serif;background:#06090f;color:#f0ede6;}
+html,body{width:100%;height:100vh;overflow:hidden;font-family:"DM Sans",sans-serif;background:#04070d;color:#f0ede6;}
+
+/* ── SCANLINE OVERLAY ── */
+body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);pointer-events:none;z-index:9000;}
 
 /* ── LAYOUT ── */
-.shell{display:grid;grid-template-columns:220px 1fr 320px;grid-template-rows:52px 1fr 60px;height:100vh;}
+.shell{display:grid;grid-template-columns:230px 1fr 330px;grid-template-rows:56px 1fr 70px;height:100vh;}
 
 /* ── HEADER ── */
-.hdr{grid-column:1/-1;grid-row:1;background:rgba(6,9,15,0.98);border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:100;}
-.hdr-brand{font-family:"Bebas Neue",sans-serif;font-size:19px;letter-spacing:4px;color:#fff;display:flex;align-items:center;gap:10px;}
-.pip{width:6px;height:6px;border-radius:50%;background:#e8ff47;box-shadow:0 0 8px #e8ff47;animation:pip 1.8s ease-in-out infinite;}
-@keyframes pip{0%,100%{opacity:1}50%{opacity:0.3}}
-.hdr-mid{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:2px;color:rgba(255,255,255,0.22);text-transform:uppercase;}
-.hdr-mid b{color:rgba(255,255,255,0.6);font-weight:400;}
-.hdr-stats{display:flex;gap:28px;}
-.hstat{text-align:right;}
-.hstat-val{font-family:"Bebas Neue",sans-serif;font-size:22px;letter-spacing:1px;display:block;line-height:1;}
-.hstat-lbl{font-family:"DM Mono",monospace;font-size:7px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.2);}
+.hdr{grid-column:1/-1;grid-row:1;background:rgba(4,7,13,0.98);border-bottom:1px solid rgba(232,255,71,0.12);display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:100;position:relative;}
+.hdr::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(232,255,71,0.3),transparent);}
+.hdr-brand{font-family:"Bebas Neue",sans-serif;font-size:20px;letter-spacing:5px;color:#fff;display:flex;align-items:center;gap:12px;}
+.pip{width:7px;height:7px;border-radius:50%;background:#e8ff47;animation:pip 1.4s ease-in-out infinite;}
+@keyframes pip{0%,100%{box-shadow:0 0 6px #e8ff47,0 0 12px #e8ff47;opacity:1}50%{box-shadow:0 0 2px #e8ff47;opacity:0.4}}
 
-/* ── LEFT PANEL — FLEET STATUS ── */
-.left-panel{grid-column:1;grid-row:2;border-right:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;overflow:hidden;background:#06090f;}
-.panel-hdr{padding:14px 18px 12px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;}
-.panel-eyebrow{font-family:"DM Mono",monospace;font-size:8px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.2);margin-bottom:3px;}
-.panel-title{font-size:14px;font-weight:500;color:rgba(255,255,255,0.7);}
+/* PLATFORM SCORE — the hero number */
+.score-wrap{display:flex;align-items:center;gap:16px;}
+.score-arc{position:relative;width:44px;height:44px;flex-shrink:0;}
+.score-arc svg{transform:rotate(-90deg);}
+.score-arc-bg{fill:none;stroke:rgba(232,255,71,0.1);stroke-width:3;}
+.score-arc-fill{fill:none;stroke:#e8ff47;stroke-width:3;stroke-linecap:round;stroke-dasharray:120;stroke-dashoffset:120;transition:stroke-dashoffset 1s ease;}
+.score-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:"Bebas Neue",sans-serif;font-size:15px;color:#e8ff47;letter-spacing:1px;}
+.score-meta{display:flex;flex-direction:column;}
+.score-label{font-family:"DM Mono",monospace;font-size:7px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.25);}
+.score-val{font-family:"Bebas Neue",sans-serif;font-size:22px;letter-spacing:2px;color:#e8ff47;line-height:1;}
+
+/* header stats */
+.hdr-stats{display:flex;gap:0;}
+.hstat{text-align:right;padding:0 20px;border-left:1px solid rgba(255,255,255,0.06);}
+.hstat-val{font-family:"Bebas Neue",sans-serif;font-size:22px;letter-spacing:1px;display:block;line-height:1;}
+.hstat-lbl{font-family:"DM Mono",monospace;font-size:7px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.18);}
+
+/* session clock */
+.hdr-clock{font-family:"DM Mono",monospace;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.2);text-transform:uppercase;}
+.hdr-clock b{color:rgba(255,255,255,0.5);font-weight:400;}
+
+/* ── LEFT PANEL ── */
+.left-panel{grid-column:1;grid-row:2;border-right:1px solid rgba(255,255,255,0.06);display:flex;flex-direction:column;overflow:hidden;background:#04070d;}
+.panel-hdr{padding:12px 16px 10px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;}
+.panel-eyebrow{font-family:"DM Mono",monospace;font-size:7px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.18);margin-bottom:3px;}
+.panel-title{font-size:13px;font-weight:500;color:rgba(255,255,255,0.6);}
 
 /* vehicle rows */
 .v-list{flex:1;overflow:hidden;}
-.v-row{padding:9px 18px;border-bottom:1px solid rgba(255,255,255,0.035);cursor:default;transition:background 0.3s;}
-.v-row.deciding{background:rgba(232,255,71,0.03);}
-.v-row-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px;}
-.v-id{font-family:"DM Mono",monospace;font-size:10px;color:rgba(255,255,255,0.6);}
-.v-badge{font-family:"DM Mono",monospace;font-size:7px;letter-spacing:1px;padding:2px 6px;}
-.v-loc{font-family:"DM Mono",monospace;font-size:8px;color:rgba(255,255,255,0.22);margin-bottom:5px;}
-.v-health{height:2px;background:rgba(255,255,255,0.06);border-radius:1px;overflow:hidden;}
+.v-row{padding:8px 16px;border-bottom:1px solid rgba(255,255,255,0.03);cursor:default;transition:background 0.4s;}
+.v-row.deciding{background:rgba(232,255,71,0.04);animation:rowScan 1.5s ease-out;}
+@keyframes rowScan{0%{background:rgba(232,255,71,0.1)}100%{background:rgba(232,255,71,0.04)}}
+.v-row-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:2px;}
+.v-id{font-family:"DM Mono",monospace;font-size:10px;color:rgba(255,255,255,0.5);}
+.v-badge{font-family:"DM Mono",monospace;font-size:7px;letter-spacing:1px;padding:2px 6px;border-radius:2px;}
+.v-loc{font-family:"DM Mono",monospace;font-size:8px;color:rgba(255,255,255,0.18);margin-bottom:4px;}
+.v-health{height:2px;background:rgba(255,255,255,0.05);border-radius:1px;overflow:hidden;}
 .v-health-fill{height:100%;border-radius:1px;transition:width 2s ease;}
 
-/* fleet summary metrics */
-.fleet-metrics{border-top:1px solid rgba(255,255,255,0.07);display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,0.07);flex-shrink:0;}
-.fmet{background:#06090f;padding:10px 14px;}
+/* fleet metrics */
+.fleet-metrics{border-top:1px solid rgba(255,255,255,0.06);display:grid;grid-template-columns:1fr 1fr;gap:1px;background:rgba(255,255,255,0.06);flex-shrink:0;}
+.fmet{background:#04070d;padding:10px 12px;}
 .fmet-val{font-family:"Bebas Neue",sans-serif;font-size:20px;letter-spacing:1px;display:block;line-height:1;}
-.fmet-lbl{font-family:"DM Mono",monospace;font-size:7px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.18);margin-top:2px;}
+.fmet-lbl{font-family:"DM Mono",monospace;font-size:7px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.15);margin-top:2px;}
 
 /* ── MAP ── */
 .map-wrap{grid-column:2;grid-row:2;position:relative;overflow:hidden;}
 #mapbox{width:100%;height:100%;}
 #ai-overlay{position:absolute;inset:0;pointer-events:none;z-index:5;overflow:hidden;}
 
-/* ── RIGHT PANEL — AUDIT LOG ── */
-.right-panel{grid-column:3;grid-row:2;border-left:1px solid rgba(255,255,255,0.07);display:flex;flex-direction:column;overflow:hidden;background:#06090f;}
+/* milestone flash */
+#milestone{position:absolute;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;transition:opacity 0.3s;}
+#milestone.show{opacity:1;}
+.milestone-inner{background:rgba(4,7,13,0.92);border:1px solid rgba(232,255,71,0.5);padding:20px 48px;text-align:center;}
+.milestone-num{font-family:"Bebas Neue",sans-serif;font-size:56px;letter-spacing:4px;color:#e8ff47;line-height:1;display:block;}
+.milestone-txt{font-family:"DM Mono",monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-top:4px;}
+.milestone-sub{font-size:13px;font-weight:500;color:rgba(255,255,255,0.7);margin-top:8px;}
+
+/* ── RIGHT PANEL ── */
+.right-panel{grid-column:3;grid-row:2;border-left:1px solid rgba(255,255,255,0.06);display:flex;flex-direction:column;overflow:hidden;background:#04070d;}
 .log-feed{flex:1;overflow-y:auto;padding:0;}
 .log-feed::-webkit-scrollbar{width:2px;}
-.log-feed::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.08);}
-
-/* log entry */
-.log-entry{padding:12px 18px;border-bottom:1px solid rgba(255,255,255,0.04);border-left:3px solid transparent;animation:entryIn 0.35s ease;transition:opacity 0.8s,border-left-color 0.3s;}
-@keyframes entryIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
-.log-entry.old{opacity:0.32;}
+.log-feed::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.06);}
+.log-entry{padding:11px 16px;border-bottom:1px solid rgba(255,255,255,0.03);border-left:3px solid transparent;animation:entryIn 0.4s ease;transition:opacity 1s,border-left-color 0.3s;}
+@keyframes entryIn{from{opacity:0;transform:translateX(8px);}to{opacity:1;transform:translateX(0);}}
+.log-entry.old{opacity:0.28;}
 .log-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
 .log-tag{font-family:"DM Mono",monospace;font-size:7px;letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:5px;}
 .log-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;}
-.log-time{font-family:"DM Mono",monospace;font-size:8px;color:rgba(255,255,255,0.18);}
-.log-loc{font-family:"DM Mono",monospace;font-size:8px;color:rgba(255,255,255,0.2);margin-bottom:5px;}
-.log-headline{font-size:12px;font-weight:500;color:rgba(255,255,255,0.88);line-height:1.35;margin-bottom:6px;}
-.log-sw{font-size:11px;font-weight:500;line-height:1.4;padding:7px 10px;border-left:2px solid;margin-bottom:6px;}
-.log-kpi{font-family:"DM Mono",monospace;font-size:8px;color:rgba(255,255,255,0.2);padding-top:6px;border-top:1px solid rgba(255,255,255,0.05);}
+.log-time{font-family:"DM Mono",monospace;font-size:8px;color:rgba(255,255,255,0.15);}
+.log-loc{font-family:"DM Mono",monospace;font-size:8px;color:rgba(255,255,255,0.18);margin-bottom:5px;}
+.log-headline{font-size:12px;font-weight:500;color:rgba(255,255,255,0.85);line-height:1.35;margin-bottom:6px;}
+.log-sw{font-size:11px;font-weight:500;line-height:1.4;padding:6px 10px;border-left:2px solid;margin-bottom:5px;}
+.log-kpi{font-family:"DM Mono",monospace;font-size:8px;color:rgba(255,255,255,0.18);padding-top:5px;border-top:1px solid rgba(255,255,255,0.04);}
+/* multiplier badge */
+.log-mult{font-family:"DM Mono",monospace;font-size:8px;display:inline-block;padding:2px 7px;margin-top:4px;border-radius:2px;}
 
-/* without callout */
-.without-box{border-top:1px solid rgba(255,255,255,0.07);padding:12px 18px;flex-shrink:0;}
-.without-lbl{font-family:"DM Mono",monospace;font-size:7px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,80,80,0.4);margin-bottom:5px;}
-.without-txt{font-size:11px;color:rgba(255,255,255,0.2);line-height:1.5;}
+/* without box */
+.without-box{border-top:1px solid rgba(255,255,255,0.06);padding:10px 16px;flex-shrink:0;}
+.without-lbl{font-family:"DM Mono",monospace;font-size:7px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,60,60,0.4);margin-bottom:4px;}
+.without-txt{font-size:10px;color:rgba(255,255,255,0.18);line-height:1.5;}
 
 /* ── BOTTOM STRIP ── */
-.bstrip{grid-column:1/-1;grid-row:3;border-top:1px solid rgba(255,255,255,0.07);display:flex;background:#06090f;}
-.bmet{flex:1;display:flex;align-items:center;gap:14px;padding:0 24px;border-right:1px solid rgba(255,255,255,0.05);}
+.bstrip{grid-column:1/-1;grid-row:3;border-top:1px solid rgba(232,255,71,0.1);display:flex;background:#04070d;position:relative;}
+.bstrip::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(232,255,71,0.2),transparent);}
+.bmet{flex:1;display:flex;align-items:center;gap:14px;padding:0 22px;border-right:1px solid rgba(255,255,255,0.04);}
 .bmet:last-child{border-right:none;}
-.bmet-val{font-family:"Bebas Neue",sans-serif;font-size:26px;letter-spacing:1px;line-height:1;flex-shrink:0;}
-.bmet-lbl{font-family:"DM Mono",monospace;font-size:8px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.18);display:block;margin-bottom:3px;}
-.bmet-desc{font-size:11px;color:rgba(255,255,255,0.28);line-height:1.4;}
+.bmet-val{font-family:"Bebas Neue",sans-serif;font-size:28px;letter-spacing:1px;line-height:1;flex-shrink:0;transition:color 0.5s;}
+.bmet-lbl{font-family:"DM Mono",monospace;font-size:7px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.15);display:block;margin-bottom:3px;}
+.bmet-desc{font-size:10px;color:rgba(255,255,255,0.25);line-height:1.4;}
+/* progress bar under each bottom metric */
+.bmet-bar{height:1px;background:rgba(255,255,255,0.05);margin-top:4px;overflow:hidden;}
+.bmet-bar-fill{height:100%;width:0%;transition:width 1s ease;}
 
 /* ── LOADING ── */
-#loading{position:fixed;inset:0;z-index:9999;background:#06090f;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;padding:40px;transition:opacity 0.6s;}
+#loading{position:fixed;inset:0;z-index:9999;background:#04070d;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:40px;transition:opacity 0.8s;}
 #loading.gone{opacity:0;pointer-events:none;visibility:hidden;}
-.ld-title{font-family:"Bebas Neue",sans-serif;font-size:52px;letter-spacing:4px;color:#fff;text-align:center;line-height:1;}
+.ld-title{font-family:"Bebas Neue",sans-serif;font-size:64px;letter-spacing:6px;color:#fff;text-align:center;line-height:1;}
 .ld-title span{color:#e8ff47;}
-.ld-sub{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.25);}
-#ld-st{font-family:"DM Mono",monospace;font-size:9px;color:rgba(255,255,255,0.3);text-align:center;min-height:16px;}
-.ld-bar{width:240px;height:2px;background:rgba(255,255,255,0.08);}
-#ld-fill{height:100%;background:#e8ff47;width:0%;transition:width 0.4s ease;}
-#ld-btn{margin-top:8px;padding:14px 52px;background:rgba(232,255,71,0.08);border:1px solid rgba(232,255,71,0.4);color:#e8ff47;font-family:"DM Mono",monospace;font-size:11px;letter-spacing:3px;text-transform:uppercase;cursor:pointer;display:none;}
-#ld-btn:hover{background:rgba(232,255,71,0.15);}
-
+.ld-subtitle{font-family:"DM Mono",monospace;font-size:9px;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,0.2);}
+#ld-st{font-family:"DM Mono",monospace;font-size:9px;color:rgba(255,255,255,0.25);text-align:center;min-height:16px;letter-spacing:1px;}
+.ld-bar{width:280px;height:1px;background:rgba(255,255,255,0.08);}
+#ld-fill{height:100%;background:#e8ff47;width:0%;transition:width 0.4s ease;box-shadow:0 0 8px #e8ff47;}
+#ld-btn{margin-top:12px;padding:16px 64px;background:transparent;border:1px solid rgba(232,255,71,0.4);color:#e8ff47;font-family:"DM Mono",monospace;font-size:10px;letter-spacing:4px;text-transform:uppercase;cursor:pointer;display:none;transition:all 0.3s;}
+#ld-btn:hover{background:rgba(232,255,71,0.08);border-color:rgba(232,255,71,0.8);box-shadow:0 0 20px rgba(232,255,71,0.1);}
 .mapboxgl-ctrl-bottom-right,.mapboxgl-ctrl-bottom-left,.mapboxgl-ctrl-top-right{display:none!important;}
+
+/* tick-up animation */
+@keyframes tickUp{0%{transform:translateY(4px);opacity:0}100%{transform:translateY(0);opacity:1}}
+.tick{animation:tickUp 0.25s ease;}
 </style>
 </head>
 <body>
@@ -106,12 +141,29 @@ html,body{width:100%;height:100vh;overflow:hidden;font-family:"DM Sans",sans-ser
 
   <!-- HEADER -->
   <div class="hdr">
-    <div class="hdr-brand"><div class="pip"></div>AD360 · Fleet Intelligence</div>
-    <div class="hdr-mid">Hamburg · <b id="vc">0</b> vehicles active · <b id="dpm">0</b> decisions / min</div>
+    <div class="hdr-brand"><div class="pip"></div>AD360 · Intelligence OS</div>
+
+    <!-- PLATFORM SCORE -->
+    <div class="score-wrap">
+      <div class="score-arc">
+        <svg viewBox="0 0 44 44" width="44" height="44">
+          <circle class="score-arc-bg" cx="22" cy="22" r="19"/>
+          <circle class="score-arc-fill" id="score-arc" cx="22" cy="22" r="19"/>
+        </svg>
+        <div class="score-num" id="score-num">0</div>
+      </div>
+      <div class="score-meta">
+        <span class="score-label">Platform Score</span>
+        <span class="score-val" id="score-val">0 <span style="font-size:12px;color:rgba(255,255,255,0.3)">/ 100</span></span>
+      </div>
+    </div>
+
+    <div class="hdr-clock">Session <b id="sess-time">00:00</b> · Hamburg · <b id="vc">0</b> vehicles · <b id="dpm">0</b> dec/min</div>
+
     <div class="hdr-stats">
       <div class="hstat"><span class="hstat-val" style="color:#e8ff47" id="htd">0</span><span class="hstat-lbl">Decisions</span></div>
-      <div class="hstat"><span class="hstat-val" style="color:#1D9E75" id="htv">€0</span><span class="hstat-lbl">Value generated</span></div>
-      <div class="hstat"><span class="hstat-val" style="color:#BA7517" id="hta">0</span><span class="hstat-lbl">Audit entries</span></div>
+      <div class="hstat"><span class="hstat-val" style="color:#1D9E75" id="htv">€0</span><span class="hstat-lbl">Value</span></div>
+      <div class="hstat"><span class="hstat-val" style="color:#BA7517" id="hta">0</span><span class="hstat-lbl">Audits</span></div>
     </div>
   </div>
 
@@ -121,13 +173,11 @@ html,body{width:100%;height:100vh;overflow:hidden;font-family:"DM Sans",sans-ser
       <div class="panel-eyebrow">Fleet status</div>
       <div class="panel-title">8 vehicles active</div>
     </div>
-    <div class="v-list" id="vlist">
-      <!-- populated by JS -->
-    </div>
+    <div class="v-list" id="vlist"></div>
     <div class="fleet-metrics">
       <div class="fmet"><span class="fmet-val" style="color:#7F77DD" id="fm-intel">+0%</span><span class="fmet-lbl">Intelligence gain</span></div>
-      <div class="fmet"><span class="fmet-val" style="color:#e8ff47" id="fm-dpm">0</span><span class="fmet-lbl">Decisions / min</span></div>
-      <div class="fmet"><span class="fmet-val" style="color:#1D9E75" id="fm-health">--</span><span class="fmet-lbl">Avg fleet health</span></div>
+      <div class="fmet"><span class="fmet-val" style="color:#e8ff47" id="fm-dpm">0</span><span class="fmet-lbl">Dec / min</span></div>
+      <div class="fmet"><span class="fmet-val" style="color:#1D9E75" id="fm-health">--</span><span class="fmet-lbl">Fleet health</span></div>
       <div class="fmet"><span class="fmet-val" style="color:#BA7517" id="fm-audit">0</span><span class="fmet-lbl">Active audits</span></div>
     </div>
   </div>
@@ -136,6 +186,13 @@ html,body{width:100%;height:100vh;overflow:hidden;font-family:"DM Sans",sans-ser
   <div class="map-wrap">
     <div id="mapbox"></div>
     <div id="ai-overlay"></div>
+    <div id="milestone">
+      <div class="milestone-inner">
+        <span class="milestone-num" id="ms-num">10</span>
+        <div class="milestone-txt" id="ms-txt">decisions captured</div>
+        <div class="milestone-sub" id="ms-sub">Zero manual actions. Zero missed value.</div>
+      </div>
+    </div>
   </div>
 
   <!-- RIGHT PANEL -->
@@ -145,7 +202,7 @@ html,body{width:100%;height:100vh;overflow:hidden;font-family:"DM Sans",sans-ser
       <div class="panel-title" id="log-count">Live · 0 entries</div>
     </div>
     <div class="log-feed" id="log-feed">
-      <div style="font-family:DM Mono,monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.12);text-align:center;padding:32px 0;" data-ph>Awaiting first decision...</div>
+      <div style="font-family:DM Mono,monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.1);text-align:center;padding:32px 0;" data-ph>Awaiting first decision...</div>
     </div>
     <div class="without-box">
       <div class="without-lbl">Without AD360</div>
@@ -155,21 +212,33 @@ html,body{width:100%;height:100vh;overflow:hidden;font-family:"DM Sans",sans-ser
 
   <!-- BOTTOM STRIP -->
   <div class="bstrip">
-    <div class="bmet"><span class="bmet-val" style="color:#e8ff47" id="sw1">€0</span><div><span class="bmet-lbl">Revenue generated</span><div class="bmet-desc">Every decision creates billable value automatically</div></div></div>
-    <div class="bmet"><span class="bmet-val" style="color:#BA7517" id="sw2">0</span><div><span class="bmet-lbl">EU AI Act audits</span><div class="bmet-desc">Every decision explained and legally defensible</div></div></div>
-    <div class="bmet"><span class="bmet-val" style="color:#7F77DD" id="sw3">+0%</span><div><span class="bmet-lbl">Intelligence improvement</span><div class="bmet-desc">Platform compounds permanently with every decision</div></div></div>
-    <div class="bmet"><span class="bmet-val" style="color:#1D9E75" id="sw4">0</span><div><span class="bmet-lbl">Institutions served</span><div class="bmet-desc">Cities · insurers · fleets · consumers</div></div></div>
+    <div class="bmet">
+      <span class="bmet-val" style="color:#e8ff47" id="sw1">€0</span>
+      <div><span class="bmet-lbl">Revenue generated</span><div class="bmet-desc">Billable value per decision, automated</div><div class="bmet-bar"><div class="bmet-bar-fill" id="bar1" style="background:#e8ff47"></div></div></div>
+    </div>
+    <div class="bmet">
+      <span class="bmet-val" style="color:#BA7517" id="sw2">0</span>
+      <div><span class="bmet-lbl">EU AI Act audits</span><div class="bmet-desc">Explainable · legally defensible</div><div class="bmet-bar"><div class="bmet-bar-fill" id="bar2" style="background:#BA7517"></div></div></div>
+    </div>
+    <div class="bmet">
+      <span class="bmet-val" style="color:#7F77DD" id="sw3">+0%</span>
+      <div><span class="bmet-lbl">Intelligence gain</span><div class="bmet-desc">Platform compounds with every decision</div><div class="bmet-bar"><div class="bmet-bar-fill" id="bar3" style="background:#7F77DD"></div></div></div>
+    </div>
+    <div class="bmet">
+      <span class="bmet-val" style="color:#1D9E75" id="sw4">0</span>
+      <div><span class="bmet-lbl">Institutions served</span><div class="bmet-desc">Cities · insurers · fleets · consumers</div><div class="bmet-bar"><div class="bmet-bar-fill" id="bar4" style="background:#1D9E75"></div></div></div>
+    </div>
   </div>
 
 </div>
 
 <!-- LOADING -->
 <div id="loading">
-  <div class="ld-title">AD360<br><span>Fleet Intelligence</span></div>
-  <div class="ld-sub">Hamburg · Live simulation · Autonomous intelligence platform</div>
+  <div class="ld-title">AD360<br><span>Intelligence OS</span></div>
+  <div class="ld-subtitle">Hamburg · Autonomous decision platform · Live simulation</div>
   <div id="ld-st">Initialising...</div>
   <div class="ld-bar"><div id="ld-fill"></div></div>
-  <button id="ld-btn" onclick="startSim()">Start simulation</button>
+  <button id="ld-btn" onclick="startSim()">Launch simulation</button>
 </div>
 
 <script>
@@ -178,12 +247,73 @@ mapboxgl.accessToken=TOKEN;
 mapboxgl.workerUrl='mapbox-gl-csp-worker.js';
 
 var map=null,vehicles=[],totalD=0,totalR=0,totalA=0,totalI=0,totalInst=0;
-var startT=null,logCards=[],hardTimer=null,simRunning=false;
+var startT=null,logCards=[],hardTimer=null,platformScore=0;
+var MILESTONES=[10,25,50,100,200];
+var milestonesFired={};
 
 function setP(p,m){document.getElementById('ld-fill').style.width=p+'%';document.getElementById('ld-st').textContent=m;}
 function showBtn(){document.getElementById('ld-btn').style.display='block';}
 
-// Vehicle state display
+/* ── SESSION CLOCK ── */
+function updateClock(){
+  if(!startT)return;
+  var s=Math.floor((Date.now()-startT)/1000);
+  var mm=String(Math.floor(s/60)).padStart(2,'0');
+  var ss=String(s%60).padStart(2,'0');
+  document.getElementById('sess-time').textContent=mm+':'+ss;
+}
+
+/* ── PLATFORM SCORE ── */
+function updateScore(){
+  // Score = weighted compound of all metrics, max 100
+  var s=0;
+  s+=Math.min(totalD*0.3,30);        // decisions (max 30)
+  s+=Math.min(totalR*0.5,20);        // revenue (max 20)
+  s+=Math.min(totalA*0.4,20);        // audits (max 20)
+  s+=Math.min(totalI*1.5,20);        // intelligence (max 20)
+  s+=Math.min(totalInst*2.5,10);     // institutions (max 10)
+  platformScore=Math.min(Math.round(s),100);
+  document.getElementById('score-val').innerHTML=platformScore+' <span style="font-size:12px;color:rgba(255,255,255,0.3)">/ 100</span>';
+  document.getElementById('score-num').textContent=platformScore;
+  // Arc: circumference ~120, dashoffset = 120 - (score/100)*120
+  var offset=120-(platformScore/100)*120;
+  document.getElementById('score-arc').style.strokeDashoffset=offset;
+  // Colour arc by score
+  var arcColor=platformScore<40?'#BA7517':platformScore<70?'#e8ff47':'#1D9E75';
+  document.getElementById('score-arc').style.stroke=arcColor;
+  document.getElementById('score-num').style.color=arcColor;
+}
+
+/* ── MILESTONE FLASH ── */
+function checkMilestone(d){
+  MILESTONES.forEach(function(m){
+    if(d>=m&&!milestonesFired[m]){
+      milestonesFired[m]=true;
+      var msgs={
+        10:['€'+totalR.toFixed(2)+' captured · 0 manual actions'],
+        25:['Platform intelligence: +'+totalI.toFixed(1)+'% · Compounding'],
+        50:['50 certified audits generated · Zero legal exposure'],
+        100:['100 decisions. Every one explained. Every one monetized.'],
+        200:['Platform score: '+platformScore+' · Full autonomy achieved']
+      };
+      var el=document.getElementById('milestone');
+      document.getElementById('ms-num').textContent=m;
+      document.getElementById('ms-txt').textContent='decisions captured';
+      document.getElementById('ms-sub').textContent=(msgs[m]||[''])[0];
+      el.classList.add('show');
+      setTimeout(function(){el.classList.remove('show');},3200);
+    }
+  });
+}
+
+/* ── ANIMATED TICK-UP ── */
+function animTick(el){
+  el.classList.remove('tick');
+  void el.offsetWidth;
+  el.classList.add('tick');
+}
+
+/* ── VEHICLE LIST ── */
 var V_LOCS=['Rathausmarkt','Hauptbahnhof','HafenCity','Speicherstadt','Jungfernstieg','Altona','Reeperbahn','Neustadt','Uhlenhorst','Eppendorf','Eimsbüttel','Sternschanze','Barmbek','Alsterarkaden','Binnenalster','Mönckebergstr.'];
 var V_NAMES=['#01','#02','#03','#04','#05','#06','#07','#08'];
 var vHealths=[94,87,98,72,95,91,88,97];
@@ -195,10 +325,10 @@ function buildVehicleList(){
   for(var i=0;i<8;i++){
     var h=vHealths[i];
     var hc=h>88?'#1D9E75':h>74?'#BA7517':'#e8ff47';
-    var sc=vStatuses[i]==='DECIDING'?'#e8ff47':vStatuses[i]==='ROUTING'?'#7F77DD':vStatuses[i]==='CHARGING'?'#1D9E75':'rgba(255,255,255,0.25)';
+    var sc=vStatuses[i]==='DECIDING'?'#e8ff47':vStatuses[i]==='ROUTING'?'#7F77DD':vStatuses[i]==='CHARGING'?'#1D9E75':'rgba(255,255,255,0.2)';
     html+='<div class="v-row'+(vStatuses[i]==='DECIDING'?' deciding':'')+'" id="vrow'+i+'">';
     html+='<div class="v-row-top"><span class="v-id">Vehicle '+V_NAMES[i]+'</span>';
-    html+='<span class="v-badge" style="color:'+sc+';background:'+sc+'15;">'+vStatuses[i]+'</span></div>';
+    html+='<span class="v-badge" style="color:'+sc+';background:'+sc+'12;">'+vStatuses[i]+'</span></div>';
     html+='<div class="v-loc" id="vloc'+i+'">'+vCurrentLocs[i]+'</div>';
     html+='<div class="v-health"><div class="v-health-fill" id="vhf'+i+'" style="width:'+h+'%;background:'+hc+';"></div></div>';
     html+='</div>';
@@ -208,57 +338,41 @@ function buildVehicleList(){
 
 function updateVehicleRow(id,status,loc){
   vStatuses[id]=status;vCurrentLocs[id]=loc;
-  var sc=status==='DECIDING'?'#e8ff47':status==='ROUTING'?'#7F77DD':status==='CHARGING'?'#1D9E75':'rgba(255,255,255,0.25)';
+  var sc=status==='DECIDING'?'#e8ff47':status==='ROUTING'?'#7F77DD':status==='CHARGING'?'#1D9E75':'rgba(255,255,255,0.2)';
   var row=document.getElementById('vrow'+id);
-  if(row){
-    row.className='v-row'+(status==='DECIDING'?' deciding':'');
-    row.querySelector('.v-badge').textContent=status;
-    row.querySelector('.v-badge').style.color=sc;
-    row.querySelector('.v-badge').style.background=sc+'15';
-  }
-  var locEl=document.getElementById('vloc'+id);
-  if(locEl)locEl.textContent=loc;
+  if(row){row.className='v-row'+(status==='DECIDING'?' deciding':'');var b=row.querySelector('.v-badge');if(b){b.textContent=status;b.style.color=sc;b.style.background=sc+'12';}}
+  var locEl=document.getElementById('vloc'+id);if(locEl)locEl.textContent=loc;
   setTimeout(function(){
-    var row2=document.getElementById('vrow'+id);
-    if(row2&&status==='DECIDING'){
-      row2.className='v-row';
-      var b=row2.querySelector('.v-badge');
-      if(b){b.textContent='NOMINAL';b.style.color='rgba(255,255,255,0.25)';b.style.background='rgba(255,255,255,0.04)';}
-    }
-  },3000);
+    var r2=document.getElementById('vrow'+id);
+    if(r2&&status==='DECIDING'){r2.className='v-row';var b2=r2.querySelector('.v-badge');if(b2){b2.textContent='NOMINAL';b2.style.color='rgba(255,255,255,0.2)';b2.style.background='rgba(255,255,255,0.04)';}}
+  },3200);
 }
 
-// Routes
 var EPS=[[10.0064,53.5530,9.9750,53.5501],[9.9356,53.5521,10.0042,53.5414],[10.0042,53.5414,9.9480,53.5508],[10.0393,53.5820,9.9938,53.5497],[9.9750,53.5920,9.9870,53.5489],[9.9490,53.5710,9.9938,53.5497],[10.0700,53.5720,9.9830,53.5610],[10.0100,53.5150,10.0042,53.5414]];
+var AIL=['ANALYSING SENSOR DATA','COMPUTING OPTIMAL ROUTE','RISK ASSESSMENT ACTIVE','DECISION MEMORY WRITING','REGULATORY ZONE CHECK','INTELLIGENCE GRAPH QUERY','BOE PROFILE UPDATING','CAPABILITY NETWORK MATCH','COP LAYER SYNCING','MOBILITY MIRROR UPDATE'];
 
-var AIL=['ANALYSING SENSOR DATA','COMPUTING OPTIMAL ROUTE','RISK ASSESSMENT ACTIVE','DECISION MEMORY WRITING','REGULATORY ZONE CHECK','INTELLIGENCE GRAPH QUERY','BOE PROFILE UPDATING','CAPABILITY NETWORK MATCH'];
 var DT=[
-  {t:'r',c:'#e8ff47',l:'REVENUE EVENT',cases:[
-    {h:'Fare transaction settled',b:'Demand-based pricing applied. Booking confirmed instantly.',s:'€0.001 transaction fee generated automatically — zero billing effort',k:'Revenue: +€0.001 · Demand score: 94'},
-    {h:'Route optimised · 18% saving',b:'Real-time routing avoided congestion. Trip efficiency improved.',s:'€2.40 efficiency gain shared with fleet operator via BOE',k:'Efficiency: +18% · Distance saved: 1.2 km'},
-    {h:'Smart charging captured',b:'Off-peak tariff window detected. Vehicle routed optimally.',s:'€0.18 energy saving logged to fleet account automatically',k:'Energy: −€0.18 · Grid peak avoided'},
-    {h:'In-trip service converted',b:'Passenger accepted recommendation based on route and profile.',s:'€1.20 retail commission earned — zero sales effort',k:'Commission: +€1.20 · Profile enriched'}
+  {t:'r',c:'#e8ff47',l:'REVENUE EVENT',mult:'×1.0',cases:[
+    {h:'Fare transaction settled',s:'€0.001 transaction fee generated automatically — zero billing effort',k:'Revenue: +€0.001 · Demand score: 94',m:'BASE REVENUE'},
+    {h:'Route optimised · 18% saving',s:'€2.40 efficiency gain shared with fleet operator via BOE',k:'Efficiency: +18% · Distance saved: 1.2 km',m:'EFFICIENCY GAIN'},
+    {h:'Smart charging captured',s:'€0.18 energy saving logged to fleet account automatically',k:'Energy: −€0.18 · Grid peak avoided',m:'ENERGY CAPTURE'},
+    {h:'In-trip service converted',s:'€1.20 retail commission earned — zero sales effort',k:'Commission: +€1.20 · Profile enriched',m:'SERVICE REVENUE'}
   ]},
-  {t:'g',c:'#BA7517',l:'GOVERNANCE EVENT',cases:[
-    {h:'Pedestrian crossing detected',b:'Vehicle yielded. Full decision context captured with sensor trace.',s:'EU AI Act audit entry auto-generated — explainable to any regulator on demand',k:'Audit created · Liability: documented · Compliance: certified'},
-    {h:'Emergency vehicle corridor cleared',b:'Corridor cleared in 0.4s via V2X detection.',s:'Full decision chain documented — manufacturer accountability established',k:'Response: unaffected · Decision: traceable'},
-    {h:'School zone speed adapted',b:'Speed reduced to 15 km/h automatically at zone boundary.',s:'Regulatory compliance generated as byproduct — no manual process',k:'Speed: 30→15 km/h · Zone: compliant'},
-    {h:'Complex intersection resolved',b:'Multi-vehicle priority correctly determined and executed.',s:'Decision explainable to cities, courts or insurers on demand',k:'Safety: maintained · Explainability: 100%'}
+  {t:'g',c:'#BA7517',l:'GOVERNANCE EVENT',mult:'×1.0',cases:[
+    {h:'Pedestrian crossing detected',s:'EU AI Act audit entry auto-generated — explainable to any regulator on demand',k:'Audit created · Liability: documented · Compliance: certified',m:'AUDIT GENERATED'},
+    {h:'Emergency vehicle corridor cleared',s:'Full decision chain documented — manufacturer accountability established',k:'Response: unaffected · Decision: traceable',m:'SAFETY CERTIFIED'},
+    {h:'School zone speed adapted',s:'Regulatory compliance generated as byproduct — no manual process',k:'Speed: 30→15 km/h · Zone: compliant',m:'COMPLIANCE AUTO'},
+    {h:'Complex intersection resolved',s:'Decision explainable to cities, courts or insurers on demand',k:'Safety: maintained · Explainability: 100%',m:'FULL AUDIT TRAIL'}
   ]},
-  {t:'i',c:'#7F77DD',l:'INTELLIGENCE EVENT',cases:[
-    {h:'New demand pattern identified',b:'Passenger cluster identified Thursday evenings. Fleet models updated.',s:'Every AD360 vehicle in Hamburg benefits from this insight immediately',k:'Model accuracy: +0.003% · New zone pattern logged'},
-    {h:'Risk model refined',b:'Intersection data enriches risk scoring. Future predictions sharper.',s:'Allianz Risk API now 0.4% more accurate for this zone type',k:'Risk delta: +0.4% · Zone coverage expanded'},
-    {h:'Predictive maintenance improved',b:'Battery degradation curve updated from live trip data.',s:'Next service predicted 3 weeks earlier — breakdown risk reduced',k:'Lead time: +3 weeks · Confidence: 94%'},
-    {h:'City flow model updated',b:'847 new real-world data points integrated.',s:'Hamburg city planners see real-time conditions — not yesterday's model',k:'Data freshness: real-time · Points: +847'}
+  {t:'i',c:'#7F77DD',l:'INTELLIGENCE EVENT',mult:'ŗ1.0',cases:[
+    {h:'New demand pattern identified',s:'Every AD360 vehicle in Hamburg benefits from this insight immediately',k:'Model accuracy: +0.003% · New zone pattern logged',m:'NETWORK EFFECT'},
+    {h:'Risk model refined',s:'Allianz Risk API now 0.4% more accurate for this zone type',k:'Risk delta: +0.4% · Zone coverage expanded',m:'COMPOUNDING'},
+    {h:'Predictive maintenance improved',s:'Next service predicted 3 weeks earlier — breakdown risk reduced',k:'Lead time: +3 weeks · Confidence: 94%',m:'FLEET OPTIMISED'},
+    {h:'City flow model updated',s:'Hamburg city planners see real-time conditions — not yesterday\'s model',k:'Data freshness: real-time · Points: +847',m:'CITY INTELLIGENCE'}
   ]}
 ];
 
-function straightLine(ep){
-  var pts=[];
-  for(var i=0;i<=28;i++){var t=i/28;pts.push([ep[0]+(ep[2]-ep[0])*t,ep[1]+(ep[3]-ep[1])*t]);}
-  return pts;
-}
-
+function straightLine(ep){var pts=[];for(var i=0;i<=28;i++){var t=i/28;pts.push([ep[0]+(ep[2]-ep[0])*t,ep[1]+(ep[3]-ep[1])*t]);}return pts;}
 function fetchRoute(ep){
   var url='https://api.mapbox.com/directions/v5/mapbox/driving/'+ep[0]+','+ep[1]+';'+ep[2]+','+ep[3]+'?geometries=geojson&overview=full&access_token='+TOKEN;
   var timeout=new Promise(function(res){setTimeout(function(){res(null);},5000);});
@@ -270,17 +384,15 @@ function makeIcon(){
   var sz=56,cv=document.createElement('canvas');cv.width=sz;cv.height=sz;
   var ctx=cv.getContext('2d');
   var g=ctx.createRadialGradient(sz/2,sz/2,4,sz/2,sz/2,sz/2);
-  g.addColorStop(0,'rgba(127,119,221,0.2)');g.addColorStop(1,'rgba(0,0,0,0)');
+  g.addColorStop(0,'rgba(127,119,221,0.18)');g.addColorStop(1,'rgba(0,0,0,0)');
   ctx.fillStyle=g;ctx.fillRect(0,0,sz,sz);
   var bw=20,bh=32,bx=(sz-bw)/2,by=(sz-bh)/2;
   ctx.beginPath();ctx.moveTo(bx+4,by);ctx.lineTo(bx+bw-4,by);ctx.quadraticCurveTo(bx+bw,by,bx+bw,by+4);ctx.lineTo(bx+bw,by+bh-4);ctx.quadraticCurveTo(bx+bw,by+bh,bx+bw-4,by+bh);ctx.lineTo(bx+4,by+bh);ctx.quadraticCurveTo(bx,by+bh,bx,by+bh-4);ctx.lineTo(bx,by+4);ctx.quadraticCurveTo(bx,by,bx+4,by);ctx.closePath();
-  ctx.fillStyle='#1e1b5e';ctx.strokeStyle='rgba(127,119,221,0.95)';ctx.lineWidth=2;ctx.fill();ctx.stroke();
-  ctx.beginPath();ctx.rect(bx+3,by+4,bw-6,9);ctx.fillStyle='rgba(100,200,255,0.28)';ctx.fill();
-  ctx.fillStyle='rgba(127,119,221,0.5)';ctx.fillRect(bx+3,by+15,bw-6,3);
-  [[bx+2,by+bh-9],[bx+bw-6,by+bh-9]].forEach(function(arr){
-    ctx.beginPath();ctx.arc(arr[0]+2,arr[1]+2,3.5,0,Math.PI*2);ctx.fillStyle='#08080f';ctx.strokeStyle='rgba(127,119,221,0.65)';ctx.lineWidth=1.2;ctx.fill();ctx.stroke();
-  });
-  ctx.beginPath();ctx.arc(sz/2,by-1,3.5,0,Math.PI*2);ctx.fillStyle='#e8ff47';ctx.shadowColor='#e8ff47';ctx.shadowBlur=8;ctx.fill();ctx.shadowBlur=0;
+  ctx.fillStyle='#1e1b5e';ctx.strokeStyle='rgba(127,119,221,0.9)';ctx.lineWidth=1.5;ctx.fill();ctx.stroke();
+  ctx.beginPath();ctx.rect(bx+3,by+4,bw-6,9);ctx.fillStyle='rgba(100,200,255,0.25)';ctx.fill();
+  ctx.fillStyle='rgba(127,119,221,0.4)';ctx.fillRect(bx+3,by+15,bw-6,3);
+  [[bx+2,by+bh-9],[bx+bw-6,by+bh-9]].forEach(function(arr){ctx.beginPath();ctx.arc(arr[0]+2,arr[1]+2,3.5,0,Math.PI*2);ctx.fillStyle='#08080f';ctx.strokeStyle='rgba(127,119,221,0.6)';ctx.lineWidth=1.2;ctx.fill();ctx.stroke();});
+  ctx.beginPath();ctx.arc(sz/2,by-1,3.5,0,Math.PI*2);ctx.fillStyle='#e8ff47';ctx.shadowColor='#e8ff47';ctx.shadowBlur=10;ctx.fill();ctx.shadowBlur=0;
   return{width:sz,height:sz,data:new Uint8Array(ctx.getImageData(0,0,sz,sz).data.buffer)};
 }
 
@@ -288,19 +400,14 @@ function Vehicle(coords,id){
   this.coords=coords;this.id=id;this.pi=0;this.t=0;
   this.sp=0.006+Math.random()*0.004;
   this.lng=coords[0][0];this.lat=coords[0][1];this.bearing=0;this.trail=[];
-  this.dt=Math.floor(Math.random()*320)+220;this.dc=260+Math.floor(Math.random()*240);
+  this.dt=Math.floor(Math.random()*300)+200;this.dc=250+Math.floor(Math.random()*240);
 }
 Vehicle.prototype.gj=function(){return{type:'Feature',geometry:{type:'Point',coordinates:[this.lng,this.lat]},properties:{b:this.bearing}};};
 Vehicle.prototype.init=function(){
   map.addSource('tr'+this.id,{type:'geojson',data:{type:'Feature',geometry:{type:'LineString',coordinates:[]}}});
-  map.addLayer({id:'trl'+this.id,type:'line',source:'tr'+this.id,paint:{'line-color':'rgba(127,119,221,0.25)','line-width':['interpolate',['linear'],['zoom'],12,1.5,16,3],'line-dasharray':[2,2]}});
+  map.addLayer({id:'trl'+this.id,type:'line',source:'tr'+this.id,paint:{'line-color':'rgba(127,119,221,0.2)','line-width':['interpolate',['linear'],['zoom'],12,1.5,16,2.5],'line-dasharray':[2,3]}});
   map.addSource('vp'+this.id,{type:'geojson',data:this.gj()});
-  map.addLayer({id:'vpl'+this.id,type:'symbol',source:'vp'+this.id,layout:{
-    'icon-image':'av',
-    'icon-size':['interpolate',['exponential',2],['zoom'],11,0.4,13,0.65,15,0.95],
-    'icon-rotate':['get','b'],'icon-rotation-alignment':'map','icon-pitch-alignment':'map',
-    'icon-allow-overlap':true,'icon-ignore-placement':true
-  }});
+  map.addLayer({id:'vpl'+this.id,type:'symbol',source:'vp'+this.id,layout:{'icon-image':'av','icon-size':['interpolate',['exponential',2],['zoom'],11,0.4,13,0.65,15,0.95],'icon-rotate':['get','b'],'icon-rotation-alignment':'map','icon-pitch-alignment':'map','icon-allow-overlap':true,'icon-ignore-placement':true}});
 };
 Vehicle.prototype.update=function(){
   var a=this.coords[this.pi],ni=(this.pi+1)%this.coords.length,b=this.coords[ni];
@@ -314,19 +421,49 @@ Vehicle.prototype.update=function(){
   this.dt++;if(this.dt>=this.dc){this.dt=0;this.dc=240+Math.floor(Math.random()*260);this.decide();}
 };
 Vehicle.prototype.decide=function(){
-  totalD++;var dtype=DT[totalD%3];var c=dtype.cases[Math.floor(Math.random()*dtype.cases.length)];
-  var loc=V_LOCS[Math.floor(Math.random()*V_LOCS.length)];var ts=new Date().toTimeString().slice(0,8);
-  document.getElementById('htd').textContent=totalD;
+  totalD++;
+  var dtype=DT[totalD%3];
+  var c=dtype.cases[Math.floor(Math.random()*dtype.cases.length)];
+  var loc=V_LOCS[Math.floor(Math.random()*V_LOCS.length)];
+  var ts=new Date().toTimeString().slice(0,8);
+
+  // compute multiplier based on intelligence gain
+  var mult=1+(totalI/100);
+  dtype.mult='×'+mult.toFixed(2);
+
+  var htdEl=document.getElementById('htd');htdEl.textContent=totalD;animTick(htdEl);
   document.getElementById('log-count').textContent='Live · '+totalD+' entries';
   if(startT){var m=Math.max((Date.now()-startT)/60000,0.05);var dpm=Math.max(1,Math.floor(totalD/m));document.getElementById('dpm').textContent=dpm;document.getElementById('fm-dpm').textContent=dpm;}
-  if(dtype.t==='r'){var v=parseFloat((Math.random()*2+0.001).toFixed(2));totalR+=v;document.getElementById('sw1').textContent='€'+totalR.toFixed(2);document.getElementById('htv').textContent='€'+totalR.toFixed(0);totalInst=Math.min(totalInst+1,4);document.getElementById('sw4').textContent=totalInst;}
-  else if(dtype.t==='g'){totalA++;document.getElementById('sw2').textContent=totalA;document.getElementById('hta').textContent=totalA;document.getElementById('fm-audit').textContent=totalA;}
-  else{totalI=Math.min(totalI+0.3,20);var is='+'+totalI.toFixed(1)+'%';document.getElementById('sw3').textContent=is;document.getElementById('fm-intel').textContent=is;}
-  // Update health display
-  var avgH=0;for(var i=0;i<8;i++)avgH+=vHealths[i];avgH=Math.round(avgH/8);document.getElementById('fm-health').textContent=avgH+'%';
+
+  if(dtype.t==='r'){
+    var v=parseFloat((Math.random()*2+0.001).toFixed(2));totalR+=v;
+    var sw1=document.getElementById('sw1');sw1.textContent='€'+totalR.toFixed(2);animTick(sw1);
+    var htv=document.getElementById('htv');htv.textContent='€'+totalR.toFixed(0);animTick(htv);
+    totalInst=Math.min(totalInst+1,4);
+    document.getElementById('sw4').textContent=totalInst;
+    document.getElementById('bar1').style.width=Math.min(totalR*2,100)+'%';
+    document.getElementById('bar4').style.width=(totalInst/4*100)+'%';
+  } else if(dtype.t==='g'){
+    totalA++;
+    var sw2=document.getElementById('sw2');sw2.textContent=totalA;animTick(sw2);
+    var hta=document.getElementById('hta');hta.textContent=totalA;animTick(hta);
+    document.getElementById('fm-audit').textContent=totalA;
+    document.getElementById('bar2').style.width=Math.min(totalA*2,100)+'%';
+  } else {
+    totalI=Math.min(totalI+0.3,20);
+    var is='+'+totalI.toFixed(1)+'%';
+    document.getElementById('sw3').textContent=is;
+    document.getElementById('fm-intel').textContent=is;
+    document.getElementById('bar3').style.width=(totalI/20*100)+'%';
+  }
+
+  var avgH=0;for(var i=0;i<8;i++)avgH+=vHealths[i];avgH=Math.round(avgH/8);
+  document.getElementById('fm-health').textContent=avgH+'%';
+  updateScore();
+  checkMilestone(totalD);
   updateVehicleRow(this.id,'DECIDING',loc);
   this.showAI(dtype);
-  var vid=this.id;setTimeout(function(){addLogEntry(vid,loc,ts,dtype,c);},1100);
+  var vid=this.id;setTimeout(function(){addLogEntry(vid,loc,ts,dtype,c,mult);},1100);
 };
 Vehicle.prototype.showAI=function(dtype){
   try{
@@ -334,57 +471,60 @@ Vehicle.prototype.showAI=function(dtype){
     for(var i=0;i<3;i++){
       (function(idx){
         var r=document.createElement('div'),d=90+idx*80;
-        r.style.cssText='position:absolute;border-radius:50%;border:2px solid '+color+';width:'+d+'px;height:'+d+'px;left:'+x+'px;top:'+y+'px;transform:translate(-50%,-50%) scale(0.05);opacity:0;transition:transform '+(1500+idx*180)+'ms cubic-bezier(0.1,0,0.3,1) '+(idx*300)+'ms,opacity '+(1500+idx*180)+'ms ease '+(idx*300)+'ms;pointer-events:none;';
+        r.style.cssText='position:absolute;border-radius:50%;border:1.5px solid '+color+';width:'+d+'px;height:'+d+'px;left:'+x+'px;top:'+y+'px;transform:translate(-50%,-50%) scale(0.05);opacity:0;transition:transform '+(1500+idx*180)+'ms cubic-bezier(0.1,0,0.3,1) '+(idx*300)+'ms,opacity '+(1500+idx*180)+'ms ease '+(idx*300)+'ms;pointer-events:none;';
         ov.appendChild(r);
-        requestAnimationFrame(function(){requestAnimationFrame(function(){r.style.transform='translate(-50%,-50%) scale(1)';r.style.opacity='0.65';});});
+        requestAnimationFrame(function(){requestAnimationFrame(function(){r.style.transform='translate(-50%,-50%) scale(1)';r.style.opacity='0.6';});});
         setTimeout(function(){r.style.opacity='0';setTimeout(function(){if(r.parentNode)r.remove();},600);},1800+idx*220);
       })(i);
     }
     var badge=document.createElement('div');
-    badge.style.cssText='position:absolute;font-family:DM Mono,monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:5px 12px;border:1px solid '+color+';background:rgba(6,9,15,0.96);color:'+color+';white-space:nowrap;pointer-events:none;left:'+x+'px;top:'+y+'px;transform:translate(-50%,-155%);opacity:0;transition:opacity .35s;box-shadow:0 0 20px '+color+'22;';
+    badge.style.cssText='position:absolute;font-family:DM Mono,monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:5px 12px;border:1px solid '+color+';background:rgba(4,7,13,0.97);color:'+color+';white-space:nowrap;pointer-events:none;left:'+x+'px;top:'+y+'px;transform:translate(-50%,-170%);opacity:0;transition:opacity .3s:';
     badge.textContent=AIL[Math.floor(Math.random()*AIL.length)];
     ov.appendChild(badge);
     requestAnimationFrame(function(){requestAnimationFrame(function(){badge.style.opacity='1';});});
-    setTimeout(function(){badge.style.opacity='0';setTimeout(function(){if(badge.parentNode)badge.remove();},350);},2400);
+    setTimeout(function(){badge.style.opacity='0';setTimeout(function(){if(badge.parentNode)badge.remove();},350);},2600);
     [0,72,144,216,288].forEach(function(ang,i){
-      var len=50+Math.random()*35,rad=ang*Math.PI/180,ax=Math.atan2(Math.sin(rad),Math.cos(rad))*180/Math.PI;
+      var len=55+Math.random()*30,rad=ang*Math.PI/180,ax=Math.atan2(Math.sin(rad),Math.cos(rad))*180/Math.PI;
       var ray=document.createElement('div');
-      ray.style.cssText='position:absolute;height:1px;transform-origin:0 50%;background:'+color+';left:'+x+'px;top:'+y+'px;width:0px;transform:rotate('+ax+'deg);opacity:0;transition:width .8s ease '+(i*80)+'ms,opacity .35s ease '+(i*80)+'ms;pointer-events:none;';
+      ray.style.cssText='position:absolute;height:1px;transform-origin:0 50%;background:'+color+'width:0px;left:'+x+'px;top:'+y+'px;transform:rotate(' +ax+'deg);opacity:0;transition:width .8s ease '+(i*70)+'ms,opacity .3s ease '+(i*70)+'ms;pointer-events:none;';
       ov.appendChild(ray);
-      requestAnimationFrame(function(){requestAnimationFrame(function(){ray.style.width=len+'px';ray.style.opacity='0.45';});});
-      setTimeout(function(){ray.style.opacity='0';setTimeout(function(){if(ray.parentNode)ray.remove();},350);},1400+i*80);
+      requestAnimationFrame(function(){requestAnimationFrame(function(){ray.style.width=len+'px';ray.style.opacity='0.4';});});
+      setTimeout(function(){ray.style.opacity='0';setTimeout(function(){if(ray.parentNode)ray.remove();},350);},1500+i*70);
     });
     var rid='rng'+Date.now()+this.id;
     map.addSource(rid,{type:'geojson',data:{type:'Feature',geometry:{type:'Point',coordinates:[this.lng,this.lat]}}});
-    map.addLayer({id:rid,type:'circle',source:rid,paint:{'circle-radius':0,'circle-color':'transparent','circle-stroke-width':2.5,'circle-stroke-color':color,'circle-stroke-opacity':0.85,'circle-pitch-alignment':'map','circle-radius-transition':{duration:1500},'circle-stroke-opacity-transition':{duration:1500}}});
-    setTimeout(function(){try{if(map.getLayer(rid)){map.setPaintProperty(rid,'circle-radius',90);map.setPaintProperty(rid,'circle-stroke-opacity',0);}}catch(e){}},30);
+    map.addLayer({id:rid,type:'circle',source:rid,paint:{'circle-radius':0,'circle-color':'transparent','circle-stroke-width':2,'circle-stroke-color':color,'circle-stroke-opacity':0.8,'circle-pitch-alignment':'map','circle-radius-transition':{duration:1500},'circle-stroke-opacity-transition':{duration:1500}}});
+    setTimeout(function(){try{if(map.getLayer(rid)){map.setPaintProperty(rid,'circle-radius',100);map.setPaintProperty(rid,'circle-stroke-opacity',0);}}catch(e){}},30);
     setTimeout(function(){try{if(map.getLayer(rid))map.removeLayer(rid);if(map.getSource(rid))map.removeSource(rid);}catch(e){}},2000);
   }catch(e){}
 };
 
-function addLogEntry(vid,loc,time,dtype,c){
+function addLogEntry(vid,loc,time,dtype,c,mult){
   var ph=document.querySelector('[data-ph]');if(ph)ph.remove();
   var feed=document.getElementById('log-feed'),entry=document.createElement('div');
   entry.className='log-entry';entry.style.borderLeftColor=dtype.c;
+  var multColor=dtype.t==='i'?'#7F77DD':dtype.t==='r'?'#e8ff47':'#BA7517';
   entry.innerHTML='<div class="log-top"><div class="log-tag"><div class="log-dot" style="background:'+dtype.c+'"></div><span style="color:'+dtype.c+'">'+dtype.l+'</span></div><span class="log-time">'+time+'</span></div>'
     +'<div class="log-loc">📍 '+loc+' &nbsp;·&nbsp; Vehicle '+V_NAMES[vid]+'</div>'
     +'<div class="log-headline">'+c.h+'</div>'
     +'<div class="log-sw" style="border-color:'+dtype.c+';background:'+dtype.c+'0d;color:'+dtype.c+'">'+c.s+'</div>'
-    +'<div class="log-kpi">'+c.k+'</div>';
+    +'<div class="log-kpi">'+c.k+'</div>'
+    +'<span class="log-mult" style="background:'+multColor+'14;color:'+multColor+'">'+c.m+' &nbsp;·&nbsp; MULTIPLIER '+mult.toFixed(2)+'ŗ</span>';
   feed.insertBefore(entry,feed.firstChild);
   logCards.unshift(entry);
   logCards.forEach(function(e,i){if(i>0)e.classList.add('old');});
-  if(logCards.length>10){var old=logCards.pop();if(old&&old.parentNode)old.remove();}
+  if(logCards.length>12){var old=logCards.pop();if(old&&old.parentNode)old.remove();}
 }
 
 function loop(){vehicles.forEach(function(v){v.update();});requestAnimationFrame(loop);}
 
 function startSim(){
   document.getElementById('loading').classList.add('gone');
-  startT=Date.now();simRunning=true;
+  startT=Date.now();
   document.getElementById('vc').textContent=vehicles.length;
   buildVehicleList();
   loop();
+  setInterval(updateClock,1000);
   setInterval(function(){
     if(!startT)return;
     var m=Math.max((Date.now()-startT)/60000,0.05);
@@ -398,28 +538,25 @@ function init(){
   if(!mapboxgl.supported()){setP(100,'WebGL unavailable');showBtn();return;}
   setP(10,'Loading map...');
   map=new mapboxgl.Map({container:'mapbox',style:'mapbox://styles/mapbox/dark-v11',center:[9.9960,53.5503],zoom:13.4,pitch:50,bearing:-12,interactive:true,attributionControl:false,fadeDuration:0});
-
   hardTimer=setTimeout(function(){
     setP(100,'Ready');showBtn();
     if(vehicles.length===0){EPS.forEach(function(ep,i){try{var v=new Vehicle(straightLine(ep),i);if(map.loaded())v.init();vehicles.push(v);}catch(e){}});}
   },10000);
-
   map.on('load',function(){
     setP(30,'Map ready. Fetching routes...');
     try{map.addImage('av',makeIcon());}catch(e){}
-    try{map.addLayer({id:'3d-bld',source:'composite','source-layer':'building',filter:['==','extrude','true'],type:'fill-extrusion',minzoom:14,paint:{'fill-extrusion-color':'#0c1220','fill-extrusion-height':['get','height'],'fill-extrusion-base':['get','min_height'],'fill-extrusion-opacity':0.9}});}catch(e){}
+    try{map.addLayer({id:'3d-bld',source:'composite','source-layer':'building',filter:['==','extrude','true'],type:'fill-extrusion',minzoom:14,paint:{'fill-extrusion-color':'#0a1020','fill-extrusion-height':['get','height'],'fill-extrusion-base':['get','min_height'],'fill-extrusion-opacity':0.85}});}catch(e){}
     var loaded=0;
-    var promises=EPS.map(function(ep){return fetchRoute(ep).then(function(c){loaded++;setP(30+loaded*8,'Route '+loaded+'/8 loaded');return c;});});
-    Promise.all(promises).then(function(all){
-      clearTimeout(hardTimer);setP(95,'Setting up vehicles...');
-      all.forEach(function(coords,i){if(coords&&coords.length>1){try{var v=new Vehicle(coords,i);v.init();vehicles.push(v);}catch(e){}});});
-      setP(100,vehicles.length+' vehicles ready on Hamburg streets');
+    Promise.all(EPS.map(function(ep){return fetchRoute(ep).then(function(c){loaded++;setP(30+loaded*8,'Route '+loaded+'/8 loaded');return c;});}))
+    .then(function(all){
+      clearTimeout(hardTimer);setP(95,'Deploying vehicles...');
+      all.forEach(function(coords,i){if(coords&&coords.length>1){try{var v=new Vehicle(coords,i);v.init();vehicles.push(v);}catch(e){}}});
+      setP(100,vehicles.length+' vehicles on Hamburg streets');
       showBtn();
     }).catch(function(){setP(100,'Ready');showBtn();});
   });
   map.on('error',function(e){console.warn('map:',e.error?e.error.message:e);});
 }
-
 init();
 </script>
 </body>
