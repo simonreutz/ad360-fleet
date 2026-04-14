@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>AD360 · Fleet Intelligence</title>
+<title>AD360 Â· Fleet Intelligence</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet">
 <script src="mapbox-gl-csp.js"></script>
 <link href="mapbox-gl.css" rel="stylesheet"/>
@@ -11,20 +11,20 @@
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{width:100%;height:100vh;overflow:hidden;font-family:"DM Sans",sans-serif;background:#04070d;color:#f0ede6;}
 
-/* ── SCANLINE OVERLAY ── */
+/* ââ SCANLINE OVERLAY ââ */
 body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);pointer-events:none;z-index:9000;}
 
-/* ── LAYOUT ── */
+/* ââ LAYOUT ââ */
 .shell{display:grid;grid-template-columns:230px 1fr 330px;grid-template-rows:56px 1fr 70px;height:100vh;}
 
-/* ── HEADER ── */
+/* ââ HEADER ââ */
 .hdr{grid-column:1/-1;grid-row:1;background:rgba(4,7,13,0.98);border-bottom:1px solid rgba(232,255,71,0.12);display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:100;position:relative;}
 .hdr::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(232,255,71,0.3),transparent);}
 .hdr-brand{font-family:"Bebas Neue",sans-serif;font-size:20px;letter-spacing:5px;color:#fff;display:flex;align-items:center;gap:12px;}
 .pip{width:7px;height:7px;border-radius:50%;background:#e8ff47;animation:pip 1.4s ease-in-out infinite;}
 @keyframes pip{0%,100%{box-shadow:0 0 6px #e8ff47,0 0 12px #e8ff47;opacity:1}50%{box-shadow:0 0 2px #e8ff47;opacity:0.4}}
 
-/* PLATFORM SCORE — the hero number */
+/* PLATFORM SCORE â the hero number */
 .score-wrap{display:flex;align-items:center;gap:16px;}
 .score-arc{position:relative;width:44px;height:44px;flex-shrink:0;}
 .score-arc svg{transform:rotate(-90deg);}
@@ -45,7 +45,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .hdr-clock{font-family:"DM Mono",monospace;font-size:9px;letter-spacing:2px;color:rgba(255,255,255,0.2);text-transform:uppercase;}
 .hdr-clock b{color:rgba(255,255,255,0.5);font-weight:400;}
 
-/* ── LEFT PANEL ── */
+/* ââ LEFT PANEL ââ */
 .left-panel{grid-column:1;grid-row:2;border-right:1px solid rgba(255,255,255,0.06);display:flex;flex-direction:column;overflow:hidden;background:#04070d;}
 .panel-hdr{padding:12px 16px 10px;border-bottom:1px solid rgba(255,255,255,0.05);flex-shrink:0;}
 .panel-eyebrow{font-family:"DM Mono",monospace;font-size:7px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.18);margin-bottom:3px;}
@@ -69,7 +69,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .fmet-val{font-family:"Bebas Neue",sans-serif;font-size:20px;letter-spacing:1px;display:block;line-height:1;}
 .fmet-lbl{font-family:"DM Mono",monospace;font-size:7px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,0.15);margin-top:2px;}
 
-/* ── MAP ── */
+/* ââ MAP ââ */
 .map-wrap{grid-column:2;grid-row:2;position:relative;overflow:hidden;}
 #mapbox{width:100%;height:100%;}
 #ai-overlay{position:absolute;inset:0;pointer-events:none;z-index:5;overflow:hidden;}
@@ -82,12 +82,13 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .milestone-txt{font-family:"DM Mono",monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(255,255,255,0.5);margin-top:4px;}
 .milestone-sub{font-size:13px;font-weight:500;color:rgba(255,255,255,0.7);margin-top:8px;}
 
-/* ── RIGHT PANEL ── */
+/* ââ RIGHT PANEL ââ */
 .right-panel{grid-column:3;grid-row:2;border-left:1px solid rgba(255,255,255,0.06);display:flex;flex-direction:column;overflow:hidden;background:#04070d;}
 .log-feed{flex:1;overflow-y:auto;padding:0;}
 .log-feed::-webkit-scrollbar{width:2px;}
 .log-feed::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.06);}
 .log-entry{padding:11px 16px;border-bottom:1px solid rgba(255,255,255,0.03);border-left:3px solid transparent;animation:entryIn 0.4s ease;transition:opacity 1s,border-left-color 0.3s;}
+.log-entry.forecast{border-left-style:dashed;}
 @keyframes entryIn{from{opacity:0;transform:translateX(8px);}to{opacity:1;transform:translateX(0);}}
 .log-entry.old{opacity:0.28;}
 .log-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
@@ -106,7 +107,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .without-lbl{font-family:"DM Mono",monospace;font-size:7px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,60,60,0.4);margin-bottom:4px;}
 .without-txt{font-size:10px;color:rgba(255,255,255,0.18);line-height:1.5;}
 
-/* ── BOTTOM STRIP ── */
+/* ââ BOTTOM STRIP ââ */
 .bstrip{grid-column:1/-1;grid-row:3;border-top:1px solid rgba(232,255,71,0.1);display:flex;background:#04070d;position:relative;}
 .bstrip::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(232,255,71,0.2),transparent);}
 .bmet{flex:1;display:flex;align-items:center;gap:14px;padding:0 22px;border-right:1px solid rgba(255,255,255,0.04);}
@@ -118,7 +119,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 .bmet-bar{height:1px;background:rgba(255,255,255,0.05);margin-top:4px;overflow:hidden;}
 .bmet-bar-fill{height:100%;width:0%;transition:width 1s ease;}
 
-/* ── LOADING ── */
+/* ââ LOADING ââ */
 #loading{position:fixed;inset:0;z-index:9999;background:#04070d;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:40px;transition:opacity 0.8s;}
 #loading.gone{opacity:0;pointer-events:none;visibility:hidden;}
 .ld-title{font-family:"Bebas Neue",sans-serif;font-size:64px;letter-spacing:6px;color:#fff;text-align:center;line-height:1;}
@@ -141,7 +142,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 
   <!-- HEADER -->
   <div class="hdr">
-    <div class="hdr-brand"><div class="pip"></div>AD360 · Intelligence OS</div>
+    <div class="hdr-brand"><div class="pip"></div>AD360 Â· Intelligence OS</div>
 
     <!-- PLATFORM SCORE -->
     <div class="score-wrap">
@@ -158,11 +159,11 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
       </div>
     </div>
 
-    <div class="hdr-clock">Session <b id="sess-time">00:00</b> · Hamburg · <b id="vc">0</b> vehicles · <b id="dpm">0</b> dec/min</div>
+    <div class="hdr-clock">Session <b id="sess-time">00:00</b> Â· Hamburg Â· <b id="vc">0</b> vehicles Â· <b id="dpm">0</b> dec/min</div>
 
     <div class="hdr-stats">
       <div class="hstat"><span class="hstat-val" style="color:#e8ff47" id="htd">0</span><span class="hstat-lbl">Decisions</span></div>
-      <div class="hstat"><span class="hstat-val" style="color:#1D9E75" id="htv">€0</span><span class="hstat-lbl">Value</span></div>
+      <div class="hstat"><span class="hstat-val" style="color:#1D9E75" id="htv">â¬0</span><span class="hstat-lbl">Value</span></div>
       <div class="hstat"><span class="hstat-val" style="color:#BA7517" id="hta">0</span><span class="hstat-lbl">Audits</span></div>
     </div>
   </div>
@@ -199,26 +200,26 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
   <div class="right-panel">
     <div class="panel-hdr">
       <div class="panel-eyebrow">Decision log</div>
-      <div class="panel-title" id="log-count">Live · 0 entries</div>
+      <div class="panel-title" id="log-count">Live Â· 0 entries</div>
     </div>
     <div class="log-feed" id="log-feed">
       <div style="font-family:DM Mono,monospace;font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.1);text-align:center;padding:32px 0;" data-ph>Awaiting first decision...</div>
     </div>
     <div class="without-box">
       <div class="without-lbl">Without AD360</div>
-      <div class="without-txt">Every decision above invisible — unexplained, unmonetized, ungoverned.</div>
+      <div class="without-txt">Every decision above invisible â unexplained, unmonetized, ungoverned.</div>
     </div>
   </div>
 
   <!-- BOTTOM STRIP -->
   <div class="bstrip">
     <div class="bmet">
-      <span class="bmet-val" style="color:#e8ff47" id="sw1">€0</span>
+      <span class="bmet-val" style="color:#e8ff47" id="sw1">â¬0</span>
       <div><span class="bmet-lbl">Revenue generated</span><div class="bmet-desc">Billable value per decision, automated</div><div class="bmet-bar"><div class="bmet-bar-fill" id="bar1" style="background:#e8ff47"></div></div></div>
     </div>
     <div class="bmet">
       <span class="bmet-val" style="color:#BA7517" id="sw2">0</span>
-      <div><span class="bmet-lbl">EU AI Act audits</span><div class="bmet-desc">Explainable · legally defensible</div><div class="bmet-bar"><div class="bmet-bar-fill" id="bar2" style="background:#BA7517"></div></div></div>
+      <div><span class="bmet-lbl">EU AI Act audits</span><div class="bmet-desc">Explainable Â· legally defensible</div><div class="bmet-bar"><div class="bmet-bar-fill" id="bar2" style="background:#BA7517"></div></div></div>
     </div>
     <div class="bmet">
       <span class="bmet-val" style="color:#7F77DD" id="sw3">+0%</span>
@@ -226,7 +227,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
     </div>
     <div class="bmet">
       <span class="bmet-val" style="color:#1D9E75" id="sw4">0</span>
-      <div><span class="bmet-lbl">Institutions served</span><div class="bmet-desc">Cities · insurers · fleets · consumers</div><div class="bmet-bar"><div class="bmet-bar-fill" id="bar4" style="background:#1D9E75"></div></div></div>
+      <div><span class="bmet-lbl">Institutions served</span><div class="bmet-desc">Cities Â· insurers Â· fleets Â· consumers</div><div class="bmet-bar"><div class="bmet-bar-fill" id="bar4" style="background:#1D9E75"></div></div></div>
     </div>
   </div>
 
@@ -235,7 +236,7 @@ body::after{content:'';position:fixed;inset:0;background:repeating-linear-gradie
 <!-- LOADING -->
 <div id="loading">
   <div class="ld-title">AD360<br><span>Intelligence OS</span></div>
-  <div class="ld-subtitle">Hamburg · Autonomous decision platform · Live simulation</div>
+  <div class="ld-subtitle">Hamburg Â· Autonomous decision platform Â· Live simulation</div>
   <div id="ld-st">Initialising...</div>
   <div class="ld-bar"><div id="ld-fill"></div></div>
   <button id="ld-btn" onclick="startSim()">Launch simulation</button>
@@ -254,7 +255,7 @@ var milestonesFired={};
 function setP(p,m){document.getElementById('ld-fill').style.width=p+'%';document.getElementById('ld-st').textContent=m;}
 function showBtn(){document.getElementById('ld-btn').style.display='block';}
 
-/* ── SESSION CLOCK ── */
+/* ââ SESSION CLOCK ââ */
 function updateClock(){
   if(!startT)return;
   var s=Math.floor((Date.now()-startT)/1000);
@@ -263,7 +264,7 @@ function updateClock(){
   document.getElementById('sess-time').textContent=mm+':'+ss;
 }
 
-/* ── PLATFORM SCORE ── */
+/* ââ PLATFORM SCORE ââ */
 function updateScore(){
   // Score = weighted compound of all metrics, max 100
   var s=0;
@@ -284,17 +285,17 @@ function updateScore(){
   document.getElementById('score-num').style.color=arcColor;
 }
 
-/* ── MILESTONE FLASH ── */
+/* ââ MILESTONE FLASH ââ */
 function checkMilestone(d){
   MILESTONES.forEach(function(m){
     if(d>=m&&!milestonesFired[m]){
       milestonesFired[m]=true;
       var msgs={
-        10:['€'+totalR.toFixed(2)+' captured · 0 manual actions'],
-        25:['Platform intelligence: +'+totalI.toFixed(1)+'% · Compounding'],
-        50:['50 certified audits generated · Zero legal exposure'],
+        10:['â¬'+totalR.toFixed(2)+' captured Â· 0 manual actions'],
+        25:['Platform intelligence: +'+totalI.toFixed(1)+'% Â· Compounding'],
+        50:['50 certified audits generated Â· Zero legal exposure'],
         100:['100 decisions. Every one explained. Every one monetized.'],
-        200:['Platform score: '+platformScore+' · Full autonomy achieved']
+        200:['Platform score: '+platformScore+' Â· Full autonomy achieved']
       };
       var el=document.getElementById('milestone');
       document.getElementById('ms-num').textContent=m;
@@ -306,19 +307,19 @@ function checkMilestone(d){
   });
 }
 
-/* ── ANIMATED TICK-UP ── */
+/* ââ ANIMATED TICK-UP ââ */
 function animTick(el){
   el.classList.remove('tick');
   void el.offsetWidth;
   el.classList.add('tick');
 }
 
-/* ── VEHICLE LIST ── */
-var V_LOCS=['Rathausmarkt','Hauptbahnhof','HafenCity','Speicherstadt','Jungfernstieg','Altona','Reeperbahn','Neustadt','Uhlenhorst','Eppendorf','Eimsbüttel','Sternschanze','Barmbek','Alsterarkaden','Binnenalster','Mönckebergstr.'];
+/* ââ VEHICLE LIST ââ */
+var V_LOCS=['Rathausmarkt','Hauptbahnhof','HafenCity','Speicherstadt','Jungfernstieg','Altona','Reeperbahn','Neustadt','Uhlenhorst','Eppendorf','EimsbÃ¼ttel','Sternschanze','Barmbek','Alsterarkaden','Binnenalster','MÃ¶nckebergstr.'];
 var V_NAMES=['#01','#02','#03','#04','#05','#06','#07','#08'];
 var vHealths=[94,87,98,72,95,91,88,97];
 var vStatuses=['NOMINAL','NOMINAL','NOMINAL','NOMINAL','NOMINAL','NOMINAL','NOMINAL','NOMINAL'];
-var vCurrentLocs=['—','—','—','—','—','—','—','—'];
+var vCurrentLocs=['â','â','â','â','â','â','â','â'];
 
 function buildVehicleList(){
   var html='';
@@ -349,26 +350,37 @@ function updateVehicleRow(id,status,loc){
 }
 
 var EPS=[[10.0064,53.5530,9.9750,53.5501],[9.9356,53.5521,10.0042,53.5414],[10.0042,53.5414,9.9480,53.5508],[10.0393,53.5820,9.9938,53.5497],[9.9750,53.5920,9.9870,53.5489],[9.9490,53.5710,9.9938,53.5497],[10.0700,53.5720,9.9830,53.5610],[10.0100,53.5150,10.0042,53.5414]];
-var AIL=['ANALYSING SENSOR DATA','COMPUTING OPTIMAL ROUTE','RISK ASSESSMENT ACTIVE','DECISION MEMORY WRITING','REGULATORY ZONE CHECK','INTELLIGENCE GRAPH QUERY','BOE PROFILE UPDATING','CAPABILITY NETWORK MATCH','COP LAYER SYNCING','MOBILITY MIRROR UPDATE'];
+var AIL=['ANALYSING SENSOR DATA','COMPUTING OPTIMAL ROUTE','RISK ASSESSMENT ACTIVE','DECISION MEMORY WRITING','REGULATORY ZONE CHECK','INTELLIGENCE GRAPH QUERY','BOE PROFILE UPDATING','CAPABILITY NETWORK MATCH','COP LAYER SYNCING','MOBILITY MIRROR UPDATE','DEMAND PATTERN FORECASTING','MAINTENANCE WINDOW PREDICTING','RISK HORIZON SCANNING','FLEET POSITIONING OPTIMISING'];
+var _AIL_REPLACED=true;
+
 
 var DT=[
-  {t:'r',c:'#e8ff47',l:'REVENUE EVENT',mult:'×1.0',cases:[
-    {h:'Fare transaction settled',s:'€0.001 transaction fee generated automatically — zero billing effort',k:'Revenue: +€0.001 · Demand score: 94',m:'BASE REVENUE'},
-    {h:'Route optimised · 18% saving',s:'€2.40 efficiency gain shared with fleet operator via BOE',k:'Efficiency: +18% · Distance saved: 1.2 km',m:'EFFICIENCY GAIN'},
-    {h:'Smart charging captured',s:'€0.18 energy saving logged to fleet account automatically',k:'Energy: −€0.18 · Grid peak avoided',m:'ENERGY CAPTURE'},
-    {h:'In-trip service converted',s:'€1.20 retail commission earned — zero sales effort',k:'Commission: +€1.20 · Profile enriched',m:'SERVICE REVENUE'}
+  {t:'r',c:'#e8ff47',l:'REVENUE EVENT',mult:'Ã1.0',cases:[
+    {h:'Fare transaction settled',s:'â¬0.001 transaction fee generated automatically â zero billing effort',k:'Revenue: +â¬0.001 Â· Demand score: 94',m:'BASE REVENUE'},
+    {h:'Route optimised Â· 18% saving',s:'â¬2.40 efficiency gain shared with fleet operator via BOE',k:'Efficiency: +18% Â· Distance saved: 1.2 km',m:'EFFICIENCY GAIN'},
+    {h:'Smart charging captured',s:'â¬0.18 energy saving logged to fleet account automatically',k:'Energy: ââ¬0.18 Â· Grid peak avoided',m:'ENERGY CAPTURE'},
+    {h:'In-trip service converted',s:'â¬1.20 retail commission earned â zero sales effort',k:'Commission: +â¬1.20 Â· Profile enriched',m:'SERVICE REVENUE'}
   ]},
-  {t:'g',c:'#BA7517',l:'GOVERNANCE EVENT',mult:'×1.0',cases:[
-    {h:'Pedestrian crossing detected',s:'EU AI Act audit entry auto-generated — explainable to any regulator on demand',k:'Audit created · Liability: documented · Compliance: certified',m:'AUDIT GENERATED'},
-    {h:'Emergency vehicle corridor cleared',s:'Full decision chain documented — manufacturer accountability established',k:'Response: unaffected · Decision: traceable',m:'SAFETY CERTIFIED'},
-    {h:'School zone speed adapted',s:'Regulatory compliance generated as byproduct — no manual process',k:'Speed: 30→15 km/h · Zone: compliant',m:'COMPLIANCE AUTO'},
-    {h:'Complex intersection resolved',s:'Decision explainable to cities, courts or insurers on demand',k:'Safety: maintained · Explainability: 100%',m:'FULL AUDIT TRAIL'}
+  {t:'g',c:'#BA7517',l:'GOVERNANCE EVENT',mult:'Ã1.0',cases:[
+    {h:'Pedestrian crossing detected',s:'EU AI Act audit entry auto-generated â explainable to any regulator on demand',k:'Audit created Â· Liability: documented Â· Compliance: certified',m:'AUDIT GENERATED'},
+    {h:'Emergency vehicle corridor cleared',s:'Full decision chain documented â manufacturer accountability established',k:'Response: unaffected Â· Decision: traceable',m:'SAFETY CERTIFIED'},
+    {h:'School zone speed adapted',s:'Regulatory compliance generated as byproduct â no manual process',k:'Speed: 30â15 km/h Â· Zone: compliant',m:'COMPLIANCE AUTO'},
+    {h:'Complex intersection resolved',s:'Decision explainable to cities, courts or insurers on demand',k:'Safety: maintained Â· Explainability: 100%',m:'FULL AUDIT TRAIL'}
   ]},
-  {t:'i',c:'#7F77DD',l:'INTELLIGENCE EVENT',mult:'ŗ1.0',cases:[
-    {h:'New demand pattern identified',s:'Every AD360 vehicle in Hamburg benefits from this insight immediately',k:'Model accuracy: +0.003% · New zone pattern logged',m:'NETWORK EFFECT'},
-    {h:'Risk model refined',s:'Allianz Risk API now 0.4% more accurate for this zone type',k:'Risk delta: +0.4% · Zone coverage expanded',m:'COMPOUNDING'},
-    {h:'Predictive maintenance improved',s:'Next service predicted 3 weeks earlier — breakdown risk reduced',k:'Lead time: +3 weeks · Confidence: 94%',m:'FLEET OPTIMISED'},
-    {h:'City flow model updated',s:'Hamburg city planners see real-time conditions — not yesterday\'s model',k:'Data freshness: real-time · Points: +847',m:'CITY INTELLIGENCE'}
+  {t:'i',c:'#7F77DD',l:'INTELLIGENCE EVENT',mult:'Å1.0',cases:[
+    {h:'New demand pattern identified',s:'Every AD360 vehicle in Hamburg benefits from this insight immediately',k:'Model accuracy: +0.003% Â· New zone pattern logged',m:'NETWORK EFFECT'},
+    {h:'Risk model refined',s:'Allianz Risk API now 0.4% more accurate for this zone type',k:'Risk delta: +0.4% Â· Zone coverage expanded',m:'COMPOUNDING'},
+    {h:'Predictive maintenance improved',s:'Next service predicted 3 weeks earlier â breakdown risk reduced',k:'Lead time: +3 weeks Â· Confidence: 94%',m:'FLEET OPTIMISED'},
+    {h:'City flow model updated',s:'Hamburg city planners see real-time conditions â not yesterday\'s model',k:'Data freshness: real-time Â· Points: +847',m:'CITY INTELLIGENCE'}
+  ]}
+,
+  {t:'f',c:'#00d4ff',l:'FORECAST',mult:'×1.0',cases:[
+    {h:'Demand surge predicted — Reeperbahn',s:'High foot traffic expected in 11 min. Two vehicles repositioning now.',k:'Acting on prediction, not reaction — passengers served before they wait',m:'PREDICTIVE DISPATCH'},
+    {h:'Charging bottleneck forecast',s:'Grid load peaks in 18 min. Vehicle #04 rerouted to secondary charger.',k:'Grid conflict avoided — zero idle time, zero cost penalty',m:'ENERGY FORECAST'},
+    {h:'Maintenance window flagged — Vehicle #06',s:'Sensor degradation detected. Service recommended within 48 hours.',k:'Caught 3 days before likely failure — no breakdown, no tow',m:'PREDICTIVE MAINTENANCE'},
+    {h:'Weather risk zone identified',s:'Rain and low visibility expected on Elbbrücken in 7 min. Fleet rerouted.',k:'Risk removed before it materialises — safety without slowdown',m:'RISK FORECAST'},
+    {h:'Demand drop predicted — HafenCity',s:'Event ending soon. Three vehicles pre-positioned at Jungfernstieg.',k:'Fleet moved before demand shifts — idle time minimised',m:'DEMAND FORECAST'},
+    {h:'Regulatory zone active in 5 min',s:'Speed restriction entering force on Mönckebergstr. Fleet pre-adjusted.',k:'Compliance achieved before the rule applies — zero reaction lag',m:'COMPLIANCE FORECAST'}
   ]}
 ];
 
@@ -422,23 +434,23 @@ Vehicle.prototype.update=function(){
 };
 Vehicle.prototype.decide=function(){
   totalD++;
-  var dtype=DT[totalD%3];
+  var dtype=DT[totalD%4]; // r,g,i,f rotation
   var c=dtype.cases[Math.floor(Math.random()*dtype.cases.length)];
   var loc=V_LOCS[Math.floor(Math.random()*V_LOCS.length)];
   var ts=new Date().toTimeString().slice(0,8);
 
   // compute multiplier based on intelligence gain
   var mult=1+(totalI/100);
-  dtype.mult='×'+mult.toFixed(2);
+  dtype.mult='Ã'+mult.toFixed(2);
 
   var htdEl=document.getElementById('htd');htdEl.textContent=totalD;animTick(htdEl);
-  document.getElementById('log-count').textContent='Live · '+totalD+' entries';
+  document.getElementById('log-count').textContent='Live Â· '+totalD+' entries';
   if(startT){var m=Math.max((Date.now()-startT)/60000,0.05);var dpm=Math.max(1,Math.floor(totalD/m));document.getElementById('dpm').textContent=dpm;document.getElementById('fm-dpm').textContent=dpm;}
 
   if(dtype.t==='r'){
     var v=parseFloat((Math.random()*2+0.001).toFixed(2));totalR+=v;
-    var sw1=document.getElementById('sw1');sw1.textContent='€'+totalR.toFixed(2);animTick(sw1);
-    var htv=document.getElementById('htv');htv.textContent='€'+totalR.toFixed(0);animTick(htv);
+    var sw1=document.getElementById('sw1');sw1.textContent='â¬'+totalR.toFixed(2);animTick(sw1);
+    var htv=document.getElementById('htv');htv.textContent='â¬'+totalR.toFixed(0);animTick(htv);
     totalInst=Math.min(totalInst+1,4);
     document.getElementById('sw4').textContent=totalInst;
     document.getElementById('bar1').style.width=Math.min(totalR*2,100)+'%';
@@ -449,11 +461,17 @@ Vehicle.prototype.decide=function(){
     var hta=document.getElementById('hta');hta.textContent=totalA;animTick(hta);
     document.getElementById('fm-audit').textContent=totalA;
     document.getElementById('bar2').style.width=Math.min(totalA*2,100)+'%';
-  } else {
+  } else if(dtype.t==='i'){
     totalI=Math.min(totalI+0.3,20);
     var is='+'+totalI.toFixed(1)+'%';
     document.getElementById('sw3').textContent=is;
     document.getElementById('fm-intel').textContent=is;
+    document.getElementById('bar3').style.width=(totalI/20*100)+'%';
+  } else {
+    totalI=Math.min(totalI+0.15,20);
+    var is2='+'+totalI.toFixed(1)+'%';
+    document.getElementById('sw3').textContent=is2;
+    document.getElementById('fm-intel').textContent=is2;
     document.getElementById('bar3').style.width=(totalI/20*100)+'%';
   }
 
@@ -502,14 +520,14 @@ Vehicle.prototype.showAI=function(dtype){
 function addLogEntry(vid,loc,time,dtype,c,mult){
   var ph=document.querySelector('[data-ph]');if(ph)ph.remove();
   var feed=document.getElementById('log-feed'),entry=document.createElement('div');
-  entry.className='log-entry';entry.style.borderLeftColor=dtype.c;
-  var multColor=dtype.t==='i'?'#7F77DD':dtype.t==='r'?'#e8ff47':'#BA7517';
+  entry.className='log-entry'+(dtype.t==='f'?' forecast':'');entry.style.borderLeftColor=dtype.c;
+  var multColor=dtype.t==='i'?'#7F77DD':dtype.t==='r'?'#e8ff47':dtype.t==='f'?'#00d4ff':'#BA7517';
   entry.innerHTML='<div class="log-top"><div class="log-tag"><div class="log-dot" style="background:'+dtype.c+'"></div><span style="color:'+dtype.c+'">'+dtype.l+'</span></div><span class="log-time">'+time+'</span></div>'
-    +'<div class="log-loc">📍 '+loc+' &nbsp;·&nbsp; Vehicle '+V_NAMES[vid]+'</div>'
+    +'<div class="log-loc">ð '+loc+' &nbsp;Â·&nbsp; Vehicle '+V_NAMES[vid]+'</div>'
     +'<div class="log-headline">'+c.h+'</div>'
     +'<div class="log-sw" style="border-color:'+dtype.c+';background:'+dtype.c+'0d;color:'+dtype.c+'">'+c.s+'</div>'
     +'<div class="log-kpi">'+c.k+'</div>'
-    +'<span class="log-mult" style="background:'+multColor+'14;color:'+multColor+'">'+c.m+' &nbsp;·&nbsp; MULTIPLIER '+mult.toFixed(2)+'ŗ</span>';
+    +'<span class="log-mult" style="background:'+multColor+'14;color:'+multColor+'">'+c.m+' &nbsp;Â·&nbsp; MULTIPLIER '+mult.toFixed(2)+'Å</span>';
   feed.insertBefore(entry,feed.firstChild);
   logCards.unshift(entry);
   logCards.forEach(function(e,i){if(i>0)e.classList.add('old');});
